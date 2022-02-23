@@ -86,8 +86,9 @@ build CMakeFiles/Spectre.dir/main.cpp.o: CXX_COMPILER__Spectre_Debug /home/felix
 #############################################
 # Link the executable Spectre
 
-build Spectre: CXX_EXECUTABLE_LINKER__Spectre_Debug CMakeFiles/Spectre.dir/main.cpp.o
+build Spectre: CXX_EXECUTABLE_LINKER__Spectre_Debug CMakeFiles/Spectre.dir/main.cpp.o | /usr/lib/x86_64-linux-gnu/libvulkan.so
   FLAGS = -g
+  LINK_LIBRARIES = /usr/lib/x86_64-linux-gnu/libvulkan.so
   OBJECT_DIR = CMakeFiles/Spectre.dir
   POST_BUILD = :
   PRE_LINK = :
