@@ -1,13 +1,16 @@
 #include <iostream>
-
-#define VK_USE_PLATFORM_XLIB_KHR
-#include <vulkan/vulkan.hpp>
-
 #ifdef __linux
 #include <X11/Xlib.h>
+#define VK_USE_PLATFORM_XLIB_KHR
+#elif _WIN32
+#include <Windows.h>
+#define VK_USE_PLATFORM_WIN32_KHR
 #endif
 
+#include <vulkan/vulkan.hpp>
+
 int main() {
+#ifdef __linux
     Display* display = XOpenDisplay(nullptr);
     Screen* screen = DefaultScreenOfDisplay(display);
     int screenID = DefaultScreen(display);
@@ -15,6 +18,8 @@ int main() {
                                         WhitePixel(display, screenID));
     XSelectInput(display, window, ExposureMask | KeyPressMask);
     XMapWindow(display, window);
+#endif
+
 
     VkApplicationInfo appInfo;
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
