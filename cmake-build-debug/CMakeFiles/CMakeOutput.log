@@ -425,3 +425,51 @@ Parsed CXX implicit link information from above output:
   implicit fwks: []
 
 
+Determining if the function XOpenDisplay exists in the /usr/lib/x86_64-linux-gnu/libX11.so;/usr/lib/x86_64-linux-gnu/libXext.so passed with the following output:
+Change Dir: /home/felix/Documents/progs/Spectre/Spectre/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/felix/Documents/clion-2021.3.3/bin/ninja/linux/ninja cmTC_6a485 && [1/2] Building C object CMakeFiles/cmTC_6a485.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_6a485
+
+
+
+Determining if the function gethostbyname exists passed with the following output:
+Change Dir: /home/felix/Documents/progs/Spectre/Spectre/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/felix/Documents/clion-2021.3.3/bin/ninja/linux/ninja cmTC_31a2a && [1/2] Building C object CMakeFiles/cmTC_31a2a.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_31a2a
+
+
+
+Determining if the function connect exists passed with the following output:
+Change Dir: /home/felix/Documents/progs/Spectre/Spectre/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/felix/Documents/clion-2021.3.3/bin/ninja/linux/ninja cmTC_5057e && [1/2] Building C object CMakeFiles/cmTC_5057e.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_5057e
+
+
+
+Determining if the function remove exists passed with the following output:
+Change Dir: /home/felix/Documents/progs/Spectre/Spectre/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/felix/Documents/clion-2021.3.3/bin/ninja/linux/ninja cmTC_bed7f && [1/2] Building C object CMakeFiles/cmTC_bed7f.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_bed7f
+
+
+
+Determining if the function shmat exists passed with the following output:
+Change Dir: /home/felix/Documents/progs/Spectre/Spectre/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/felix/Documents/clion-2021.3.3/bin/ninja/linux/ninja cmTC_e8607 && [1/2] Building C object CMakeFiles/cmTC_e8607.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_e8607
+
+
+
+Determining if the function IceConnectionNumber exists in the ICE passed with the following output:
+Change Dir: /home/felix/Documents/progs/Spectre/Spectre/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/home/felix/Documents/clion-2021.3.3/bin/ninja/linux/ninja cmTC_48b70 && [1/2] Building C object CMakeFiles/cmTC_48b70.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_48b70
+
+
+
