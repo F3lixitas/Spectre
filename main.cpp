@@ -1,3 +1,8 @@
+/**
+ * this serves as an example file, it doesn't belong in the project
+**/
+
+
 #include <iostream>
 #ifdef __linux
 #include <X11/Xlib.h>
@@ -26,7 +31,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 #include <vulkan/vulkan.hpp>
 
 int main() {
-#ifdef __linux
+#ifdef __linux__
     Display* display = XOpenDisplay(nullptr);
     Screen* screen = DefaultScreenOfDisplay(display);
     int screenID = DefaultScreen(display);
@@ -85,7 +90,7 @@ int main() {
 
     VkSurfaceKHR  surface;
 
-#ifdef __linux
+#ifdef __linux__
     VkXlibSurfaceCreateInfoKHR xlibCreateInfo;
     xlibCreateInfo.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
     xlibCreateInfo.pNext = nullptr;

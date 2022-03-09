@@ -1,6 +1,6 @@
-#include "SWidget.hpp"
+#include "SWSWidget.hpp"
 
-SWidget::SWidget() {
+SWSWidget::SWSWidget() {
 
 }
 
@@ -18,9 +18,16 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam){
 #endif
 
 
-void SWidget::create(const SWidgetInfo& info) {
+void SWSWidget::create(const SWSWidgetInfo& info) {
 #if defined __linux__ || defined __APPLE__
+    _display = XOpenDisplay(nullptr);
+    _screen = DefaultScreenOfDisplay(_display);
+    _screenID = DefaultScreen(_display);
 
+    _window = XCreateSimpleWindow(_display, RootWindowOfScreen(_screen), info.offsetX, info.offsetY, info.sizeX, info.sizeY,
+                                  0, BlackPixel(_display, _screenID), WhitePixel(_display, _screenID));
+    XSelectInput(_display, _window, KeyPressMask|KeyReleaseMask|StructureNotifyMask|ExposureMask);
+    XMapRaised(_display, _window);
 #elif defined _WIN32
     WNDCLASSEX wc;
     wc.cbClsExtra = 0;
@@ -36,12 +43,12 @@ void SWidget::create(const SWidgetInfo& info) {
 #endif
 }
 
-void SWidget::onCreate(int a, int b) {
+void SWSWidget::onCreate(int a, int b) {
     if(_onCreate)
         _onCreate(a, b);
 }
 
-void SWidget::onDestroy(int a, int b) {
+void SWSWidget::onDestroy(int a, int b) {
     if(_onDestroy)
         _onDestroy(a, b);
 }
