@@ -5,16 +5,18 @@ SWSWidget::SWSWidget() {
 }
 
 #if defined _WIN32
-LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam){
+LRESULT CALLBACK SWSWidget::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam){
     switch(msg){
         case WM_CREATE:
             break;
         case WM_DESTROY:
+            ::PostQuitMessage(0);
             break;
+        default:
+            return ::DefWindowProc(hwnd, msg, wparam, lparam);
     }
     return 0;
 }
-
 #endif
 
 
@@ -39,7 +41,15 @@ void SWSWidget::create(const SWSWidgetInfo& info) {
     wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
     wc.lpszClassName = LPCSTR ("Spectre");
     wc.lpszMenuName = LPCSTR ("");
-    wc.lpfnWndProc = wndProc;
+    wc.lpfnWndProc = &wndProc;
+
+    ::RegisterClassEx(&wc);
+
+    _widgetHandle = ::CreateWindowExW(WS_EX_OVERLAPPEDWINDOW, LPCWSTR(L"Spectre"), LPCWSTR(L"Spectre"), WS_OVERLAPPEDWINDOW,
+                              CW_USEDEFAULT, CW_USEDEFAULT, 720, 480, nullptr, nullptr, nullptr, nullptr);
+
+    ::ShowWindow(_widgetHandle, SW_SHOW);
+    ::UpdateWindow(_widgetHandle);
 #endif
 }
 

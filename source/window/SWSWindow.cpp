@@ -9,6 +9,12 @@ void SWSWindow::proc() {
     }
     if (_event.type == KeyPress)
         _shouldClose = true;
+#elif defined _WIN32
+    MSG message;
+    while (::PeekMessage(&message, nullptr, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&message);
+        DispatchMessageW(&message);
+    }
 #endif
 }
 

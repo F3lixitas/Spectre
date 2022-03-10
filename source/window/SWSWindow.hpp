@@ -5,7 +5,9 @@
 
 class SWSWindow : public SWSContainer {
 private:
+#if defined __linux__ || defined __APPLE__
     XEvent          _event;
+#endif
     bool            _shouldClose = false;
 public:
     SWSWindow() : SWSContainer() {

@@ -34,8 +34,10 @@ protected:
 
     void (*_onCreate)(int, int);
     void (*_onDestroy)(int, int);
+    LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 public:
+
 
     SWSWidget();
     void create(const SWSWidgetInfo&);
