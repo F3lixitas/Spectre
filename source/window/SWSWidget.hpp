@@ -30,11 +30,11 @@ protected:
     int         _screenID;
 #elif _WIN32
     HWND        _widgetHandle;
+    LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 #endif
 
     void (*_onCreate)(int, int);
     void (*_onDestroy)(int, int);
-    LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 public:
 
