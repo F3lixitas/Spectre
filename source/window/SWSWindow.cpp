@@ -4,8 +4,8 @@ void SWSWindow::proc() {
 #if defined __linux__ || defined __APPLE__
     XNextEvent(_display, &_event);
     if (_event.type == Expose) {
-        XFillRectangle(_display, _window, DefaultGC(_display, _screenID), 20, 20, 10, 10);
-        XDrawString(_display, _window, DefaultGC(_display, _screenID), 10, 50, "hello world", 11);
+        //XFillRectangle(_display, _window, DefaultGC(_display, _screenID), 20, 20, 10, 10);
+        //XDrawString(_display, _window, DefaultGC(_display, _screenID), 10, 50, "hello world", 11);
     }
     if (_event.type == KeyPress)
         _shouldClose = true;

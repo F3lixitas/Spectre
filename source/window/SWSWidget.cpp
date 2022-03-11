@@ -19,15 +19,25 @@ LRESULT CALLBACK SWSWidget::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 }
 #endif
 
+SWSWindowHandle SWSWidget::getHandle() const {
+    return {_display, _window, _gc};
+}
 
 void SWSWidget::create(const SWSWidgetInfo& info) {
 #if defined __linux__ || defined __APPLE__
-    _display = XOpenDisplay(nullptr);
+    SWSWindowHandle parentHandle;
+    if(info.parent) {
+        parentHandle = info.parent->getHandle();
+        _display = parentHandle.display;
+    } else {
+        _display = XOpenDisplay(nullptr);
+    }
+
     _screen = DefaultScreenOfDisplay(_display);
     _screenID = DefaultScreen(_display);
 
-    _window = XCreateSimpleWindow(_display, RootWindowOfScreen(_screen), info.offsetX, info.offsetY, info.sizeX, info.sizeY,
-                                  0, BlackPixel(_display, _screenID), WhitePixel(_display, _screenID));
+    _window = XCreateSimpleWindow(_display, info.parent ? parentHandle.window : RootWindowOfScreen(_screen), info.offsetX, info.offsetY, info.sizeX, info.sizeY,
+                                  1, BlackPixel(_display, _screenID), WhitePixel(_display, _screenID));
     XSelectInput(_display, _window, KeyPressMask|KeyReleaseMask|StructureNotifyMask|ExposureMask);
     XMapRaised(_display, _window);
 #elif defined _WIN32

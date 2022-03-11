@@ -3,7 +3,7 @@ project(Spectre)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(Spectre source/window/SWSWidget.cpp source/main.cpp source/window/SWSWindow.cpp source/window/SWSContainer.cpp)
+add_executable(Spectre source/window/SWSWidget.cpp source/main.cpp source/window/SWSWindow.cpp source/window/SWSContainer.cpp source/window/SWSDrawable.cpp source/window/SWSLabel.cpp source/window/SWSButton.cpp)
 
 if(UNIX)
     find_package(X11 REQUIRED)

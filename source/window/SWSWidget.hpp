@@ -17,7 +17,17 @@ typedef struct SWSWidgetInfo {
     SWSWidget* parent = nullptr;
     void (*onCreate)(int,int) = nullptr;
     void (*onDestroy)(int, int) = nullptr;
-} SWidgetInfo;
+} SWSWidgetInfo;
+
+typedef struct SWSWindowHandle {
+#if defined __linux__ || defined __APPLE__
+    Display*    display;
+    Window      window;
+    GC          gc;
+#elif _WIN32
+    HWND        windowHandle;
+#endif
+} SWSWindowHandle;
 
 class SWSWidget {
 protected:
@@ -41,6 +51,10 @@ public:
 
     SWSWidget();
     void create(const SWSWidgetInfo&);
+
+#if defined __linux__ || defined __APPLE__
+    SWSWindowHandle getHandle() const;
+#endif
 
     void onCreate(int, int);
     void onDestroy(int, int);
