@@ -4,7 +4,10 @@
 #include "SWSWidget.hpp"
 
 class SWSDrawable : public SWSWidget {
-
+protected:
+    GC _gc;
+public:
+    void clear();
 };
 
 #endif

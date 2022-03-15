@@ -20,7 +20,7 @@ LRESULT CALLBACK SWSWidget::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 #endif
 
 SWSWindowHandle SWSWidget::getHandle() const {
-    return {_display, _window, _gc};
+    return {_display, _window};
 }
 
 void SWSWidget::create(const SWSWidgetInfo& info) {

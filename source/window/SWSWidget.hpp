@@ -23,7 +23,6 @@ typedef struct SWSWindowHandle {
 #if defined __linux__ || defined __APPLE__
     Display*    display;
     Window      window;
-    GC          gc;
 #elif _WIN32
     HWND        windowHandle;
 #endif
@@ -35,7 +34,6 @@ protected:
 #if defined __linux__ || defined __APPLE__
     Display*    _display;
     Window      _window;
-    GC          _gc;
     Screen*     _screen;
     int         _screenID;
 #elif _WIN32
