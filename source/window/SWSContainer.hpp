@@ -13,6 +13,7 @@ public:
         _amountOfChildren = 0;
     }
     void addChild(SWSWidget* child, unsigned long index);
+    void proc();
 };
 
 #endif
