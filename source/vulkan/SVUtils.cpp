@@ -1,7 +1,7 @@
 #include "SVUtils.hpp"
 #include <cstring>
 
-void createBuffer(VkDevice& logicalDevice, VkPhysicalDevice* physicalDevice, VkDeviceSize bufferSize, VkBufferUsageFlags usage, VkBuffer& buffer, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory& deviceMemory){
+void createBuffer(VkDevice* logicalDevice, VkPhysicalDevice* physicalDevice, VkDeviceSize bufferSize, VkBufferUsageFlags usage, VkBuffer& buffer, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory& deviceMemory){
     VkBufferCreateInfo bufferInfo;
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.pNext = nullptr;
@@ -12,10 +12,10 @@ void createBuffer(VkDevice& logicalDevice, VkPhysicalDevice* physicalDevice, VkD
     bufferInfo.queueFamilyIndexCount = 0;
     bufferInfo.pQueueFamilyIndices = nullptr;
 
-    vkCreateBuffer(logicalDevice, &bufferInfo, nullptr, &buffer);
+    vkCreateBuffer(*logicalDevice, &bufferInfo, nullptr, &buffer);
     VkMemoryRequirements memoryRequirements;
 
-    vkGetBufferMemoryRequirements(logicalDevice, buffer, &memoryRequirements);
+    vkGetBufferMemoryRequirements(*logicalDevice, buffer, &memoryRequirements);
 
     uint32_t memIndex = getMemoryType(physicalDevice[0], memoryRequirements.memoryTypeBits, memoryProperty);
 
@@ -25,13 +25,13 @@ void createBuffer(VkDevice& logicalDevice, VkPhysicalDevice* physicalDevice, VkD
     memoryAllocateInfo.allocationSize = memoryRequirements.size;
     memoryAllocateInfo.memoryTypeIndex = memIndex;
 
-    vkAllocateMemory(logicalDevice, &memoryAllocateInfo, nullptr, &deviceMemory);
+    vkAllocateMemory(*logicalDevice, &memoryAllocateInfo, nullptr, &deviceMemory);
 
-    vkBindBufferMemory(logicalDevice, buffer, deviceMemory, 0);
+    vkBindBufferMemory(*logicalDevice, buffer, deviceMemory, 0);
 }
 
 void createAndUploadBuffer(VkDevice& logicalDevice, VkPhysicalDevice* physicalDevice, VkDeviceSize bufferSize, VkBufferUsageFlags usage, VkBuffer& buffer, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory& deviceMemory){
-    createBuffer(logicalDevice, physicalDevice, bufferSize, usage, buffer, memoryProperty, deviceMemory);
+    createBuffer(&logicalDevice, physicalDevice, bufferSize, usage, buffer, memoryProperty, deviceMemory);
 
     void* data;
     vkMapMemory(logicalDevice, deviceMemory, 0, bufferSize, 0, &data);

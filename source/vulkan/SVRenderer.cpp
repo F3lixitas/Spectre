@@ -224,11 +224,11 @@ void SVRenderer::createDescriptorSetLayout() {
 }
 
 void SVRenderer::initPipeline() {
-    auto emptyVertexShader   = readFile("shaders/emptyShader.vert.spv");
-    auto emptyFragmentShader = readFile("shaders/emptyShader.frag.spv");
+    auto emptyVertexShader   = readFile("../source/vulkan/shaders/emptyShader.vert.spv");
+    auto emptyFragmentShader = readFile("../source/vulkan/shaders/emptyShader.frag.spv");
 
-    auto defaultVertexShader   = readFile("shaders/simpleShader.vert.spv");
-    auto defaultFragmentShader = readFile("shaders/simpleShader.frag.spv");
+    auto defaultVertexShader   = readFile("../source/vulkan/shaders/simpleShader.vert.spv");
+    auto defaultFragmentShader = readFile("../source/vulkan/shaders/simpleShader.frag.spv");
 
     VkShaderModule emptyVertModule;
     VkShaderModule emptyFragModule;
@@ -239,9 +239,58 @@ void SVRenderer::initPipeline() {
     VkShaderModule defaultFragModule;
     createShaderModule(defaultVertexShader, defaultVertModule);
     createShaderModule(defaultFragmentShader, defaultFragModule);
+
+    std::vector<VkVertexInputBindingDescription> bindingDesc = SVVertex::getBindingDescriptions();
+    std::vector<VkVertexInputAttributeDescription> attributeDesc = SVVertex::getAttributeDescriptions();
+
+    SVPipelineConfig emptyPipelineConf = {0, 0, nullptr, nullptr};
+    SVPipelineConfig defaultPipelineConf = {(uint32_t )attributeDesc.size(), (uint32_t )bindingDesc.size(), attributeDesc.data(), bindingDesc.data()};
+
+    _pipelines.push_back(SVPipeline());
+    _pipelines[0].init(emptyVertModule, emptyFragModule, _displaySize, emptyPipelineConf);
+    _pipelines[0].enable(_device, _renderPass, _descriptorSetLayout);
+
+    _pipelines.push_back(SVPipeline());
+    _pipelines[1].init(defaultVertModule, defaultFragModule, _displaySize, defaultPipelineConf);
+    _pipelines[1].enable(_device, _renderPass, _descriptorSetLayout);
+
+    vkDestroyShaderModule(_device, emptyVertModule, nullptr);
+    vkDestroyShaderModule(_device, emptyFragModule, nullptr);
+
+    vkDestroyShaderModule(_device, defaultVertModule, nullptr);
+    vkDestroyShaderModule(_device, defaultFragModule, nullptr);
 }
 
-/*
+void SVRenderer::initFramebuffers(){
+    _framebuffers = new VkFramebuffer[_amountOfSwapchainImages];
+
+    for(int i = 0; i < _amountOfSwapchainImages; i++){
+        VkFramebufferCreateInfo framebufferCreateInfo;
+        framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferCreateInfo.pNext = nullptr;
+        framebufferCreateInfo.flags = 0;
+        framebufferCreateInfo.renderPass = _renderPass;
+        framebufferCreateInfo.attachmentCount = 1;
+        framebufferCreateInfo.pAttachments = &_imageViews[i];
+        framebufferCreateInfo.width = _displaySize.width;
+        framebufferCreateInfo.height = _displaySize.height;
+        framebufferCreateInfo.layers = 1;
+
+        vkCreateFramebuffer(_device, &framebufferCreateInfo, nullptr, &_framebuffers[i]);
+    }
+}
+
+void SVRenderer::initCommandPool(){
+    VkCommandPoolCreateInfo commandPoolInfo;
+    commandPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    commandPoolInfo.pNext = nullptr;
+    commandPoolInfo.flags = 0;
+    commandPoolInfo.queueFamilyIndex = _queueFamilyIndex;
+
+    vkCreateCommandPool(_device, &commandPoolInfo, nullptr, &_commandPool);
+}
+
+
 void SVRenderer::createDescriptorPool() {
     VkDescriptorPoolSize poolSize;
     poolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -264,28 +313,107 @@ void SVRenderer::createDescriptorPool() {
     descSetAllocate.descriptorSetCount = 1;
     descSetAllocate.pSetLayouts = &_descriptorSetLayout;
 
-    vkAllocateDescriptorSets(*_logicalDevice, &descSetAllocate, _descriptorSet);
+    vkAllocateDescriptorSets(_device, &descSetAllocate, &_descriptorSet);
 
-    VkDescriptorImageInfo imageInfo;
-    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    imageInfo.imageView = *_textures[0].getImageView();
-    imageInfo.sampler = *_textures[0].getSampler();
+    //VkDescriptorImageInfo imageInfo;
+    //imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    //imageInfo.imageView = *_textures[0].getImageView();
+    //imageInfo.sampler = *_textures[0].getSampler();
 
     VkWriteDescriptorSet writeDescSet{};
     writeDescSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    writeDescSet.dstSet = *_descriptorSet;
+    writeDescSet.dstSet = _descriptorSet;
     writeDescSet.dstBinding = 0;
     writeDescSet.dstArrayElement = 0;
     writeDescSet.descriptorCount = 1;
     writeDescSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    writeDescSet.pImageInfo = &imageInfo;
+//    writeDescSet.pImageInfo = &imageInfo;
+    writeDescSet.pImageInfo = nullptr;
     writeDescSet.pBufferInfo = nullptr;
     writeDescSet.pTexelBufferView = nullptr;
 
 
-    vkUpdateDescriptorSets(*_logicalDevice, 1, &writeDescSet, 0, nullptr);
+    //vkUpdateDescriptorSets(_device, 1, &writeDescSet, 0, nullptr);
 }
-*/
+
+void SVRenderer::createCommand(){
+
+    vkDeviceWaitIdle(_device);
+
+    VkCommandBufferAllocateInfo cmdBufferAllocateInfo;
+    cmdBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    cmdBufferAllocateInfo.pNext = nullptr;
+    cmdBufferAllocateInfo.commandPool = _commandPool;
+    cmdBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    cmdBufferAllocateInfo.commandBufferCount = _amountOfSwapchainImages;
+
+    _commandBuffers = new VkCommandBuffer[_amountOfSwapchainImages];
+
+    vkAllocateCommandBuffers(_device, &cmdBufferAllocateInfo, _commandBuffers);
+
+    VkCommandBufferBeginInfo cmdBufferBeginInfo;
+    cmdBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    cmdBufferBeginInfo.pNext = nullptr;
+    cmdBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+    cmdBufferBeginInfo.pInheritanceInfo = nullptr;
+
+    for(int i = 0; i < _amountOfSwapchainImages; i++){
+        vkBeginCommandBuffer(_commandBuffers[i], &cmdBufferBeginInfo);
+
+        VkClearValue clearValue = {0.0f, 0.0f, 0.0f, 1.0f};
+
+        VkRenderPassBeginInfo renderPassBeginInfo;
+        renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassBeginInfo.pNext = nullptr;
+        renderPassBeginInfo.renderPass = _renderPass;
+        renderPassBeginInfo.renderArea.offset = {0, 0};
+        renderPassBeginInfo.renderArea.extent = _displaySize;
+        renderPassBeginInfo.framebuffer = _framebuffers[i];
+        renderPassBeginInfo.clearValueCount = 1;
+        renderPassBeginInfo.pClearValues = &clearValue;
+
+        vkCmdBeginRenderPass(_commandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+        vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines[0].getPipeline());
+
+        VkViewport viewport;
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = _displaySize.width;
+        viewport.height = _displaySize.height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+
+        vkCmdSetViewport(_commandBuffers[i], 0, 1, &viewport);
+
+        VkRect2D scissor;
+        scissor.offset = {0, 0};
+        scissor.extent = _displaySize;
+
+        vkCmdSetScissor(_commandBuffers[i], 0, 1, &scissor);
+
+        vkCmdBindDescriptorSets(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines[0].getLayout(), 0, 1, &_descriptorSet, 0, nullptr);
+
+        vkCmdDraw(_commandBuffers[i], 0, 1, 0, 0);
+
+        vkCmdEndRenderPass(_commandBuffers[i]);
+        vkEndCommandBuffer(_commandBuffers[i]);
+    }
+
+
+}
+
+void SVRenderer::initSemaphore(){
+    VkSemaphoreCreateInfo semaphoreInfo;
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+    semaphoreInfo.pNext = nullptr;
+    semaphoreInfo.flags = 0;
+
+    vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_semaphoreBegin);
+
+    vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_semaphoreEnd);
+}
+
 void SVRenderer::init() {
     createInstance();
     initSurface();
@@ -295,6 +423,131 @@ void SVRenderer::init() {
     createImageViews();
     createRenderPass();
     createDescriptorSetLayout();
+    initPipeline();
+    initFramebuffers();
+    initCommandPool();
+    createDescriptorPool();
+    createCommand();
+    initSemaphore();
+}
+
+void SVRenderer::updateRenderingCommands(){
+
+    vkFreeCommandBuffers(_device, _commandPool, _amountOfSwapchainImages, _commandBuffers);
+
+    VkCommandBufferAllocateInfo cmdBufferAllocateInfo;
+    cmdBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    cmdBufferAllocateInfo.pNext = nullptr;
+    cmdBufferAllocateInfo.commandPool = _commandPool;
+    cmdBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    cmdBufferAllocateInfo.commandBufferCount = _amountOfSwapchainImages;
+
+    _commandBuffers = new VkCommandBuffer[_amountOfSwapchainImages];
+
+    vkAllocateCommandBuffers(_device, &cmdBufferAllocateInfo, _commandBuffers);
+
+    VkCommandBufferBeginInfo cmdBufferBeginInfo;
+    cmdBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    cmdBufferBeginInfo.pNext = nullptr;
+    cmdBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+    cmdBufferBeginInfo.pInheritanceInfo = nullptr;
+
+    for(int i = 0; i < _amountOfSwapchainImages; i++){
+        vkBeginCommandBuffer(_commandBuffers[i], &cmdBufferBeginInfo);
+
+        VkClearValue clearValue = {0.0f, 0.0f, 0.0f, 1.0f};
+
+        VkRenderPassBeginInfo renderPassBeginInfo;
+        renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassBeginInfo.pNext = nullptr;
+        renderPassBeginInfo.renderPass = _renderPass;
+        renderPassBeginInfo.renderArea.offset = {0, 0};
+        renderPassBeginInfo.renderArea.extent = _displaySize;
+        renderPassBeginInfo.framebuffer = _framebuffers[i];
+        renderPassBeginInfo.clearValueCount = 1;
+        renderPassBeginInfo.pClearValues = &clearValue;
+
+        vkCmdBeginRenderPass(_commandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+        vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines[1].getPipeline());
+
+        VkViewport viewport;
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = _displaySize.width;
+        viewport.height = _displaySize.height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+
+        vkCmdSetViewport(_commandBuffers[i], 0, 1, &viewport);
+
+        VkRect2D scissor;
+        scissor.offset = {0, 0};
+        scissor.extent = _displaySize;
+
+        vkCmdSetScissor(_commandBuffers[i], 0, 1, &scissor);
+
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindDescriptorSets(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines[1].getLayout(), 0, 1, &_descriptorSet, 0, nullptr);
+        for(int j = 0; j < _mesh.size(); j++){
+            _mesh[j].bind(&_commandBuffers[i]);
+            _mesh[j].draw(&_commandBuffers[i]);
+        }
+
+        vkCmdEndRenderPass(_commandBuffers[i]);
+        vkEndCommandBuffer(_commandBuffers[i]);
+    }
+
+}
+
+void SVRenderer::addMeshData(std::vector<SVVertex>& vertices, std::vector<uint32_t>& indices){
+    _mesh.push_back(SVMesh(&_device));
+    _mesh[_mesh.size() - 1].loadVertices(&vertices, &indices, &_physicalDevices[0]);
+    vkDeviceWaitIdle(_device);
+    updateRenderingCommands();
+}
+
+void SVRenderer::removeMeshData(uint32_t index){
+    if(index >= _mesh.size()) return;
+    std::vector<SVMesh>::iterator it = _mesh.begin();
+    std::advance(it, index);
+    vkDeviceWaitIdle(_device);
+    _mesh[index].destroy();
+    _mesh.erase(it);
+    updateRenderingCommands();
+}
+
+void SVRenderer::render(){
+    vkDeviceWaitIdle(_device);
+    uint32_t imageIndex;
+    vkAcquireNextImageKHR(_device, _swapchain.getSwapchain(), std::numeric_limits<uint64_t>::max(), _semaphoreBegin, VK_NULL_HANDLE, &imageIndex);
+
+    VkPipelineStageFlags waitStageMask[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+
+    VkSubmitInfo submitInfo;
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.pNext = nullptr;
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = &_semaphoreBegin;
+    submitInfo.pWaitDstStageMask = waitStageMask;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &_commandBuffers[imageIndex];
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = &_semaphoreEnd;
+
+    vkQueueSubmit(_queue, 1, &submitInfo, VK_NULL_HANDLE);
+
+    VkPresentInfoKHR presentInfo;
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.pNext = nullptr;
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = &_semaphoreEnd;
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = &_swapchain.getSwapchain();
+    presentInfo.pImageIndices = &imageIndex;
+    presentInfo.pResults = nullptr;
+
+    vkQueuePresentKHR(_queue, &presentInfo);
 }
 
 void SVRenderer::destroy() {

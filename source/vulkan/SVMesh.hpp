@@ -1,6 +1,8 @@
 #ifndef SPECTRE_VULKAN_VERTEX
 #define SPECTRE_VULKAN_VERTEX
 
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include "SVUtils.hpp"
 
@@ -37,7 +39,7 @@ public:
         vkDestroyBuffer(*_logicalDevice, _vertexBuffer, nullptr);
     }
 
-    void loadVertices(std::vector<SVVertex>* vertices, std::vector<uint32_t>* indices, VkPhysicalDevice* physicalDevice);
+    void loadVertices(std::vector<SVVertex>* RESTRICT vertices, std::vector<uint32_t>* RESTRICT indices, VkPhysicalDevice* RESTRICT physicalDevice);
     void draw(VkCommandBuffer* commandBuffer);
     void bind(VkCommandBuffer* commandBuffer);
 

@@ -1,6 +1,6 @@
 #include <fstream>
 #include <vector>
-
+#include <string>
 
 std::vector<char> readFile(const char* filepath){
     std::ifstream file(filepath, std::ios::binary | std::ios::ate);
@@ -13,6 +13,8 @@ std::vector<char> readFile(const char* filepath){
         return outBuffer;
     }
     else{
-        throw std::runtime_error("No such file!");
+        std::string error("No such file :");
+        error += filepath;
+        throw std::runtime_error(error.data());
     }
 }
