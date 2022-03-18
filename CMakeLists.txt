@@ -9,6 +9,8 @@ if(UNIX)
     find_package(X11 REQUIRED)
     target_include_directories(${PROJECT_NAME} PUBLIC ${X11_INCLUDE_DIR})
     target_link_libraries(${PROJECT_NAME} ${X11_LIBRARIES})
+    target_include_directories(${PROJECT_NAME} PUBLIC ${X11_xcb_INCLUDE_PATH})
+    target_link_libraries(${PROJECT_NAME} ${X11_xcb_LIB})
 endif()
 
 find_package(Vulkan REQUIRED)

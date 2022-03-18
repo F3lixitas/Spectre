@@ -5,8 +5,10 @@
 
 class SWSDrawable : public SWSWidget {
 protected:
-    GC _gc;
+    //GC _gc;
+    xcb_gcontext_t _gc;
 public:
+    void create(const SWSWidgetInfo&);
     void clear();
 };
 
