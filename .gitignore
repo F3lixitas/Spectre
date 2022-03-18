@@ -31,5 +31,8 @@
 *.out
 *.app
 
-.idea
-cmake-build-debug
+# Special folders
+/cmake-build-debug
+/.idea
+/cmake-build-debug/*
+/.idea/*

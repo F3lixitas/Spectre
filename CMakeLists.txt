@@ -3,24 +3,16 @@ project(Spectre)
 
 set(CMAKE_CXX_STANDARD 23)
 
-find_package(Vulkan)
-if (NOT ${Vulkan_INCLUDE_DIRS} STREQUAL "")
-	set(VULKAN_PATH ${Vulkan_INCLUDE_DIRS})
-	STRING(REGEX REPLACE "/Include" "" VULKAN_PATH ${VULKAN_PATH})
-endif()
-		 
-if(NOT Vulkan_FOUND)
-	# CMake may fail to locate the libraries but could be able to 
-	# provide some path in Vulkan SDK include directory variable
-	# 'Vulkan_INCLUDE_DIRS', try to extract path from this.
-	message(STATUS "Failed to locate Vulkan SDK, retrying again...")
-	if(EXISTS "${VULKAN_PATH}")
-		message(STATUS "Successfully located the Vulkan SDK: ${VULKAN_PATH}")
-	else()
-		message("Error: Unable to locate Vulkan SDK. Please turn off auto locate option by specifying 'AUTO_LOCATE_VULKAN' as 'OFF'")
-		message("and specify manually path using 'VULKAN_SDK' and 'VULKAN_VERSION' variables in the CMakeLists.txt.")
-		return()
-	endif()
+add_executable(Spectre source/window/SWSWidget.cpp source/main.cpp source/window/SWSWindow.cpp source/window/SWSContainer.cpp source/window/SWSDrawable.cpp source/window/SWSLabel.cpp source/window/SWSButton.cpp source/vulkan/SVWidget.cpp source/vulkan/SVRenderer.cpp source/vulkan/SVSwapchain.cpp source/vulkan/SVPipeline.cpp source/vulkan/SVUtils.cpp source/vulkan/SVMesh.cpp)
+
+if(UNIX)
+    find_package(X11 REQUIRED)
+    target_include_directories(${PROJECT_NAME} PUBLIC ${X11_INCLUDE_DIR})
+    target_link_libraries(${PROJECT_NAME} ${X11_LIBRARIES})
+    target_include_directories(${PROJECT_NAME} PUBLIC ${X11_xcb_INCLUDE_PATH})
+    target_link_libraries(${PROJECT_NAME} ${X11_xcb_LIB})
 endif()
 
-add_executable(Spectre main.cpp)
+find_package(Vulkan REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} Vulkan::Vulkan)
