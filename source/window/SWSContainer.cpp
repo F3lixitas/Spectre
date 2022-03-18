@@ -5,11 +5,11 @@ void SWSContainer::addChild(SWSWidget *child, unsigned long index) {
     _amountOfChildren++;
 }
 
-void procCallback(SWSWidget* child){
-    child->proc();
+void procCallback(SWSWidget* child, xcb_generic_event_t* event){
+    child->proc(event);
 }
 
-void SWSContainer::proc() {
-    SWSWidget::proc();
-    _children.forEach(&procCallback);
+void SWSContainer::proc(xcb_generic_event_t* event) {
+    SWSWidget::proc(event);
+    //_children.forEach<xcb_generic_event_t*>(&procCallback, event);
 }

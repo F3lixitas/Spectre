@@ -22,8 +22,11 @@ typedef struct SWSWidgetInfo {
 
 typedef struct SWSWindowHandle {
 #if defined __linux__ || defined __APPLE__
-    Display*    display;
-    Window      window;
+//    Display*    display;
+//    Window      window;
+    xcb_window_t        window;
+    xcb_connection_t*   connection;
+    xcb_screen_t*       screen;
 #elif _WIN32
     HWND        windowHandle;
 #endif
@@ -41,28 +44,29 @@ protected:
     xcb_connection_t*       _connection;
     xcb_screen_t*           _screen;
     xcb_window_t            _window;
-    xcb_generic_event_t*    _event;
     int                     _screenID;
 #elif _WIN32
     HWND        _widgetHandle;
     LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 #endif
 
-    void (*_onCreate)(int, int);
-    void (*_onDestroy)(int, int);
+    void (*_onCreate)(int, int) = nullptr;
+    void (*_onDestroy)(int, int) = nullptr;
+
+
 
 public:
     SWSWidget();
-    void create(const SWSWidgetInfo&);
+    virtual void create(const SWSWidgetInfo&);
     void destroy();
 
 #if defined __linux__ || defined __APPLE__
     SWSWindowHandle getHandle() const;
 #endif
-
+    virtual void proc(xcb_generic_event_t* event);
     void onCreate(int, int);
     void onDestroy(int, int);
-    virtual void proc();
+
 };
 
 #endif

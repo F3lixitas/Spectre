@@ -4,8 +4,10 @@
 
 void SWSWindow::proc() {
 #if defined __linux__ || defined __APPLE__
-//    SWSWidget::proc();
-//    _children.forEach(&procCallback);
+    if((_event = xcb_wait_for_event(_connection)))
+        SWSContainer::proc(_event);
+    else
+        _shouldClose = true;
 
 //    XNextEvent(_display, &_event);
 //    if (_event.type == Expose) {

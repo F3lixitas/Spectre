@@ -41,6 +41,9 @@ int main(int argc, char* argv[]){
     }
 
     renderer.destroy();
+    rendererWidget.destroy();
+    someWidget.destroy();
+    window.destroy();
 
     return 0;
 }

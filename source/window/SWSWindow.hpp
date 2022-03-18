@@ -8,6 +8,7 @@ private:
 #if defined __linux__ || defined __APPLE__
 
 #endif
+    xcb_generic_event_t*    _event;
     bool            _shouldClose = false;
 public:
     SWSWindow() : SWSContainer() {

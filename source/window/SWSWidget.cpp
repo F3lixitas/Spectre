@@ -20,7 +20,7 @@ LRESULT CALLBACK SWSWidget::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 #endif
 
 SWSWindowHandle SWSWidget::getHandle() const {
-    return {_display, _window};
+    return {_window, _connection, _screen};
 }
 
 void SWSWidget::create(const SWSWidgetInfo& info) {
@@ -41,13 +41,20 @@ void SWSWidget::create(const SWSWidgetInfo& info) {
     //XSelectInput(_display, _window, KeyPressMask|KeyReleaseMask|StructureNotifyMask|ExposureMask);
     //XMapRaised(_display, _window);
 
-    _connection = xcb_connect(nullptr, &_screenID);
-    xcb_screen_iterator_t iterator;
-    iterator = xcb_setup_roots_iterator(xcb_get_setup(_connection));
-    for(;iterator.rem; --_screenID, xcb_screen_next(&iterator)){
-        if(_screenID == 0) {
-            _screen = iterator.data;
-            break;
+    SWSWindowHandle parentHandle;
+    if(info.parent){
+        parentHandle = info.parent->getHandle();
+        _connection = parentHandle.connection;
+        _screen = parentHandle.screen;
+    } else {
+        _connection = xcb_connect(nullptr, &_screenID);
+        xcb_screen_iterator_t iterator;
+        iterator = xcb_setup_roots_iterator(xcb_get_setup(_connection));
+        for(;iterator.rem; --_screenID, xcb_screen_next(&iterator)){
+            if(_screenID == 0) {
+                _screen = iterator.data;
+                break;
+            }
         }
     }
 
@@ -58,7 +65,8 @@ void SWSWidget::create(const SWSWidgetInfo& info) {
     value[0] = _screen->white_pixel;
     value[1] = XCB_EVENT_MASK_EXPOSURE;
 
-    xcb_create_window(_connection, XCB_COPY_FROM_PARENT, _window, _screen->root, 0, 0, 150, 150, 10, XCB_WINDOW_CLASS_INPUT_OUTPUT,
+    xcb_create_window(_connection, XCB_COPY_FROM_PARENT, _window, info.parent ? parentHandle.window : _screen->root,
+                      info.offsetX, info.offsetY, info.sizeX, info.sizeY, 1, XCB_WINDOW_CLASS_INPUT_OUTPUT,
                       _screen->root_visual, XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK, value);
 
     xcb_map_window(_connection, _window);
@@ -92,8 +100,14 @@ void SWSWidget::destroy() {
     xcb_disconnect(_connection);
 }
 
-void SWSWidget::proc(){
-
+void SWSWidget::proc(xcb_generic_event_t* event){
+    switch(event->response_type){
+        case XCB_EXPOSE:
+            xcb_expose_event_t *eevent = (xcb_expose_event_t*)event;
+            if(eevent->window == _window){
+                onCreate(5, 5);
+            }
+    }
 }
 
 void SWSWidget::onCreate(int a, int b) {
