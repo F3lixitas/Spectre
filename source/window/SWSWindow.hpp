@@ -16,6 +16,8 @@ public:
     }
     bool shouldClose();
     void proc();
+
+    void destroy();
 };
 
 #endif

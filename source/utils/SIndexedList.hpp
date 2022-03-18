@@ -34,9 +34,8 @@ public:
     }
     ~SIndexedList(){
         __indexedListBody<T>* currentElement = _firstElement;
-        while(_firstElement != nullptr){
+        while(currentElement != nullptr){
             _firstElement = currentElement->next;
-            delete currentElement->element;
             delete currentElement;
             currentElement = _firstElement;
         }

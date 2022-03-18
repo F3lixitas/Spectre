@@ -3,6 +3,8 @@
 #include "vulkan/SVRenderer.hpp"
 #include "vulkan/SVMesh.hpp"
 
+#include <iostream>
+
 int main(int argc, char* argv[]){
 
     SWSWidgetInfo winInfo;
@@ -57,9 +59,8 @@ int main(int argc, char* argv[]){
     }
 
     renderer.destroy();
-    rendererWidget.destroy();
-    someWidget.destroy();
     window.destroy();
+
 
     return 0;
 }

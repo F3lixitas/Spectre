@@ -13,6 +13,7 @@ public:
     SWSContainer() : SWSWidget(){
         _amountOfChildren = 0;
     }
+
     void addChild(SWSWidget* child, unsigned long index);
     void proc(xcb_generic_event_t* event);
 };

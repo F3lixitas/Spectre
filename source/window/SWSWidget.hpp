@@ -2,8 +2,8 @@
 #define SPECTRE_WINDOWING_SYSTEM_WIDGET
 
 #if defined __linux__ || defined __APPLE__
-    #include <X11/Xlib.h>
     #include <xcb/xcb.h>
+    #include <xcb/xcb_atom.h>
 #elif _WIN32
     #include <Windows.h>
 #endif
@@ -22,8 +22,6 @@ typedef struct SWSWidgetInfo {
 
 typedef struct SWSWindowHandle {
 #if defined __linux__ || defined __APPLE__
-//    Display*    display;
-//    Window      window;
     xcb_window_t        window;
     xcb_connection_t*   connection;
     xcb_screen_t*       screen;
@@ -36,11 +34,6 @@ class SWSWidget {
 protected:
 
 #if defined __linux__ || defined __APPLE__
-//    Display*    _display;
-//    Window      _window;
-//    Screen*     _screen;
-//    int         _screenID;
-
     xcb_connection_t*       _connection;
     xcb_screen_t*           _screen;
     xcb_window_t            _window;
@@ -58,7 +51,6 @@ protected:
 public:
     SWSWidget();
     virtual void create(const SWSWidgetInfo&);
-    void destroy();
 
 #if defined __linux__ || defined __APPLE__
     SWSWindowHandle getHandle() const;

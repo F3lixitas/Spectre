@@ -551,6 +551,32 @@ void SVRenderer::render(){
 }
 
 void SVRenderer::destroy() {
+    vkDeviceWaitIdle(_device);
+
+    for(int i = 0; i < _mesh.size(); i++){
+        _mesh[i].destroy();
+    }
+
+    vkDestroySemaphore(_device, _semaphoreBegin, nullptr);
+    vkDestroySemaphore(_device, _semaphoreEnd, nullptr);
+
+    vkFreeCommandBuffers(_device, _commandPool, _amountOfSwapchainImages, _commandBuffers);
+
+    vkFreeDescriptorSets(_device, _descriptorPool, 1, &_descriptorSet);
+
+    vkDestroyDescriptorPool(_device, _descriptorPool, nullptr);
+    for(int i = 0; i < _amountOfSwapchainImages; i++){
+        vkDestroyFramebuffer(_device, _framebuffers[i], nullptr);
+    }
+
+    vkDestroyCommandPool(_device, _commandPool, nullptr);
+
+    for(int i = 0; i < _pipelines.size(); i++){
+        _pipelines[i].destroy(_device);
+    }
+
+    vkDestroyDescriptorSetLayout(_device, _descriptorSetLayout, nullptr);
+    vkDestroyRenderPass(_device, _renderPass, nullptr);
     for(int i = 0; i < _amountOfSwapchainImages; i++){
         vkDestroyImageView(_device, _imageViews[i], nullptr);
     }
@@ -566,11 +592,16 @@ SVRenderer::SVRenderer(SVWidget *widget) {
         SWSWidgetInfo widgetInfo;
         widgetInfo.sizeX = 100;
         widgetInfo.sizeY = 100;
+
+        //todo make it proper
     }
     else
         _widget = widget;
 }
 
 SVRenderer::~SVRenderer() {
-
+    delete[] _physicalDevices;
+    delete[] _imageViews;
+    delete[] _framebuffers;
+    delete[] _commandBuffers;
 }

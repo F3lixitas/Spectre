@@ -11,5 +11,5 @@ void procCallback(SWSWidget* child, xcb_generic_event_t* event){
 
 void SWSContainer::proc(xcb_generic_event_t* event) {
     SWSWidget::proc(event);
-    //_children.forEach<xcb_generic_event_t*>(&procCallback, event);
+    _children.forEach<xcb_generic_event_t*>(&procCallback, event);
 }

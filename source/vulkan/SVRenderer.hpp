@@ -16,18 +16,18 @@ private:
     //////// VULKAN FRAMEWORK ATTRIBUTES ////////
     VkInstance              _instance;
     VkSurfaceKHR            _surface;
-    VkPhysicalDevice*       _physicalDevices;
+    VkPhysicalDevice*       _physicalDevices; //
     uint32_t                _amountOfPhysicalDevices;
     VkDevice                _device;
     VkQueue                 _queue;
-    VkImageView*            _imageViews;
+    VkImageView*            _imageViews; //
     VkRenderPass            _renderPass;
     VkDescriptorSetLayout   _descriptorSetLayout;
-    VkFramebuffer*          _framebuffers;
+    VkFramebuffer*          _framebuffers; //
     VkCommandPool           _commandPool;
     VkDescriptorSet         _descriptorSet;
     VkDescriptorPool        _descriptorPool;
-    VkCommandBuffer*        _commandBuffers;
+    VkCommandBuffer*        _commandBuffers; //
     VkSemaphore             _semaphoreBegin;
     VkSemaphore             _semaphoreEnd;
 

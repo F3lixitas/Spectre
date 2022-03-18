@@ -2,9 +2,7 @@
 
 void SWSDrawable::clear() {
 #if defined __linux__ || __APPLE__
-    //XClearWindow(_display, _window);
-    xcb_clear_area(_connection, false, _window, 0, 0, 100, 100);
-
+    xcb_clear_area(_connection, false, _window, 0, 0, 100, 100); //todo : put adapted values
 #endif
 }
 

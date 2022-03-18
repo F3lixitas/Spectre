@@ -25,21 +25,6 @@ SWSWindowHandle SWSWidget::getHandle() const {
 
 void SWSWidget::create(const SWSWidgetInfo& info) {
 #if defined __linux__ || defined __APPLE__
-    //SWSWindowHandle parentHandle;
-    //if(info.parent) {
-    //    parentHandle = info.parent->getHandle();
-    //    _display = parentHandle.display;
-    //} else {
-    //    _display = XOpenDisplay(nullptr);
-    //}
-//
-    //_screen = DefaultScreenOfDisplay(_display);
-    //_screenID = DefaultScreen(_display);
-//
-    //_window = XCreateSimpleWindow(_display, info.parent ? parentHandle.window : RootWindowOfScreen(_screen), info.offsetX, info.offsetY, info.sizeX, info.sizeY,
-    //                              1, BlackPixel(_display, _screenID), WhitePixel(_display, _screenID));
-    //XSelectInput(_display, _window, KeyPressMask|KeyReleaseMask|StructureNotifyMask|ExposureMask);
-    //XMapRaised(_display, _window);
 
     SWSWindowHandle parentHandle;
     if(info.parent){
@@ -69,6 +54,16 @@ void SWSWidget::create(const SWSWidgetInfo& info) {
                       info.offsetX, info.offsetY, info.sizeX, info.sizeY, 1, XCB_WINDOW_CLASS_INPUT_OUTPUT,
                       _screen->root_visual, XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK, value);
 
+    if(!info.parent){
+        xcb_change_property (_connection, XCB_PROP_MODE_REPLACE, _window,
+                             XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8,
+                             7, "Spectre");
+
+        xcb_change_property (_connection, XCB_PROP_MODE_REPLACE, _window,
+                             XCB_ATOM_WM_ICON_NAME, XCB_ATOM_STRING, 8,
+                             7, "Spectre");
+    }
+
     xcb_map_window(_connection, _window);
 
     xcb_flush(_connection);
@@ -94,10 +89,6 @@ void SWSWidget::create(const SWSWidgetInfo& info) {
     ::ShowWindow(_widgetHandle, SW_SHOW);
     ::UpdateWindow(_widgetHandle);
 #endif
-}
-
-void SWSWidget::destroy() {
-    xcb_disconnect(_connection);
 }
 
 void SWSWidget::proc(xcb_generic_event_t* event){
