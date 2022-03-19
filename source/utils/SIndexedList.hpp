@@ -68,7 +68,7 @@ public:
     template<typename G>
     void forEach(void (*callback)(T*, G), G arg1){
         __indexedListBody<T>* currentElement = _firstElement;
-        for(unsigned int i; i < _numberOfElements; i++){
+        for(unsigned int i = 0; i < _numberOfElements; i++){
             callback(currentElement->element, arg1);
             currentElement = currentElement->next;
         }

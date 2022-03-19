@@ -2,27 +2,31 @@
 #include "window/SWSLabel.hpp"
 #include "vulkan/SVRenderer.hpp"
 #include "vulkan/SVMesh.hpp"
+#include "window/SWSButton.hpp"
 
-#include <iostream>
+SVRenderer * Renderer;
+
+void buttonClick(){
+    std::vector<SVVertex> vertices(3);
+    std::vector<uint32_t> indices(3);
+    vertices[0] = {{-0.5, -0.5}, {1, 0, 0}, {0, 0}};
+    vertices[1] = {{-0.5, 0.5}, {0, 1, 0}, {0, 0}};
+    vertices[2] = {{0.5, -0.5}, {0, 0, 1}, {0, 0}};
+
+    indices[0] = 0;
+    indices[1] = 1;
+    indices[2] = 2;
+
+    Renderer->addMeshData(vertices, indices);
+}
 
 int main(int argc, char* argv[]){
-
     SWSWidgetInfo winInfo;
     winInfo.sizeX = 1280;
     winInfo.sizeY = 720;
 
     SWSWindow window;
     window.create(winInfo);
-
-    SWSWidgetInfo widgetInfo;
-    widgetInfo.offsetX = 25;
-    widgetInfo.offsetY = 25;
-    widgetInfo.sizeX = 50;
-    widgetInfo.sizeY = 50;
-    widgetInfo.parent = &window;
-
-    SWSLabel someWidget;
-    someWidget.create(widgetInfo);
 
     SVWidget rendererWidget;
     SWSWidgetInfo rendererWidgetInfo;
@@ -35,6 +39,7 @@ int main(int argc, char* argv[]){
 
     SVRenderer renderer(&rendererWidget);
     renderer.init();
+    Renderer = &renderer;
 
     std::vector<SVVertex> vertices(3);
     std::vector<uint32_t> indices(3);
@@ -49,7 +54,27 @@ int main(int argc, char* argv[]){
 
     renderer.addMeshData(vertices, indices);
 
-    window.addChild(&someWidget, 1);
+    SWSButtonInfo buttonInfo;
+    buttonInfo.offsetX = 25;
+    buttonInfo.offsetY = 100;
+    buttonInfo.sizeX = 50;
+    buttonInfo.sizeY = 50;
+    buttonInfo.parent = &window;
+    buttonInfo.onClick = &buttonClick;
+
+    SWSButton button;
+    button.create(buttonInfo);
+
+    SWSWidgetInfo widgetInfo;
+    widgetInfo.sizeX = 50;
+    widgetInfo.sizeY = 50;
+    widgetInfo.parent = &button;
+
+    SWSLabel someWidget;
+    someWidget.create(widgetInfo);
+
+    button.addChild(&someWidget, 1);
+    window.addChild(&button, 3);
     window.addChild(&rendererWidget, 2);
 
     while(!window.shouldClose()){

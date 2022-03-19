@@ -8,14 +8,17 @@
     #include <Windows.h>
 #endif
 
+#include "SWSFlags.hpp"
+
 class SWSWidget;
 
 typedef struct SWSWidgetInfo {
-    int offsetX = 0;
-    int offsetY = 0;
-    int sizeX = 100;
-    int sizeY = 100;
-    SWSWidget* parent = nullptr;
+    int         offsetX = 0;
+    int         offsetY = 0;
+    int         sizeX = 100;
+    int         sizeY = 100;
+    uint32_t    flags = 0;
+    SWSWidget*  parent = nullptr;
     void (*onCreate)(int,int) = nullptr;
     void (*onDestroy)(int, int) = nullptr;
 } SWSWidgetInfo;
