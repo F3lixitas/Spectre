@@ -1,11 +1,19 @@
 #include "SWSWidget.hpp"
+#include <iostream>
 
 SWSWidget::SWSWidget() {
 
 }
 
-#if defined _WIN32
-LRESULT CALLBACK SWSWidget::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam){
+SWSWindowHandle SWSWidget::getHandle() const {
+#if defined __linux__ || defined __APPLE__
+    return {_window, _connection, _screen};
+#elif defined _WIN32
+    return {_widgetHandle};
+#endif
+}
+
+LRESULT CALLBACK winProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam){
     switch(msg){
         case WM_CREATE:
             break;
@@ -16,11 +24,6 @@ LRESULT CALLBACK SWSWidget::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
             return ::DefWindowProc(hwnd, msg, wparam, lparam);
     }
     return 0;
-}
-#endif
-
-SWSWindowHandle SWSWidget::getHandle() const {
-    return {_window, _connection, _screen};
 }
 
 void SWSWidget::create(const SWSWidgetInfo& info) {
@@ -69,28 +72,53 @@ void SWSWidget::create(const SWSWidgetInfo& info) {
     xcb_flush(_connection);
 
 #elif defined _WIN32
-    WNDCLASSEX wc;
-    wc.cbClsExtra = 0;
-    wc.cbSize = sizeof(WNDCLASSEX);
-    wc.cbWndExtra = 0;
-    wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
-    wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    wc.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
-    wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
-    wc.lpszClassName = LPCSTR ("Spectre");
-    wc.lpszMenuName = LPCSTR ("");
-    wc.lpfnWndProc = &wndProc;
 
-    ::RegisterClassEx(&wc);
+    wProc = [](HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) -> LRESULT CALLBACK {
+        switch(msg){
+            case WM_CREATE:
+                break;
+            case WM_DESTROY:
+                ::PostQuitMessage(0);
+                break;
+            default:
+                return ::DefWindowProc(hwnd, msg, wparam, lparam);
+        }
+        return 0;
+    };
 
-    _widgetHandle = ::CreateWindowExW(WS_EX_OVERLAPPEDWINDOW, LPCWSTR(L"Spectre"), LPCWSTR(L"Spectre"), WS_OVERLAPPEDWINDOW,
-                              CW_USEDEFAULT, CW_USEDEFAULT, 720, 480, nullptr, nullptr, nullptr, nullptr);
+    std::cout <<"window created !\n";
+    if(info.parent != nullptr){
+        _widgetHandle = ::CreateWindow(LPCSTR("Spectre"),  LPCSTR(""),
+                                       WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+                                       info.offsetX, info.offsetY, info.sizeX, info.sizeY,
+                                       info.parent->getHandle().windowHandle, nullptr,
+                                       nullptr, nullptr);
+    } else {
+        WNDCLASSEX wc;
+        wc.cbClsExtra = 0;
+        wc.cbSize = sizeof(WNDCLASSEX);
+        wc.cbWndExtra = 0;
+        wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
+        wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
+        wc.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+        wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
+        wc.lpszClassName = LPCSTR ("Spectre");
+        wc.lpszMenuName = LPCSTR ("");
+        wc.lpfnWndProc = &winProc;
 
+        ::RegisterClassEx(&wc);
+        _widgetHandle = ::CreateWindowExW(WS_EX_OVERLAPPEDWINDOW, LPCWSTR(L"Spectre"), LPCWSTR(L"Spectre"), WS_OVERLAPPEDWINDOW,
+                                          info.offsetX, info.offsetY, info.sizeX, info.sizeY, nullptr, nullptr, nullptr, nullptr);
+
+
+    }
+    if(!_widgetHandle) std::cout << "Bad creation \n";
     ::ShowWindow(_widgetHandle, SW_SHOW);
     ::UpdateWindow(_widgetHandle);
 #endif
 }
 
+#if defined __linux__ || defined __APPLE__
 void SWSWidget::proc(xcb_generic_event_t* event){
     switch(event->response_type){
         case XCB_EXPOSE:
@@ -100,6 +128,7 @@ void SWSWidget::proc(xcb_generic_event_t* event){
             }
     }
 }
+#endif
 
 void SWSWidget::onCreate(int a, int b) {
     if(_onCreate)

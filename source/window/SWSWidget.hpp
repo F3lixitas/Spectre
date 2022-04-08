@@ -6,6 +6,7 @@
     #include <xcb/xcb_atom.h>
 #elif _WIN32
     #include <Windows.h>
+    #include <inttypes.h>
 #endif
 
 #include "SWSFlags.hpp"
@@ -42,23 +43,21 @@ protected:
     xcb_window_t            _window;
     int                     _screenID;
 #elif _WIN32
-    HWND        _widgetHandle;
-    LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+    HWND                    _widgetHandle;
+    LRESULT CALLBACK (*wProc)(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 #endif
 
     void (*_onCreate)(int, int) = nullptr;
     void (*_onDestroy)(int, int) = nullptr;
-
-
 
 public:
     SWSWidget();
     virtual void create(const SWSWidgetInfo&);
 
 #if defined __linux__ || defined __APPLE__
-    SWSWindowHandle getHandle() const;
-#endif
     virtual void proc(xcb_generic_event_t* event);
+#endif
+    SWSWindowHandle getHandle() const;
     void onCreate(int, int);
     void onDestroy(int, int);
 

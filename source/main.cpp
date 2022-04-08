@@ -52,7 +52,7 @@ int main(int argc, char* argv[]){
     indices[1] = 1;
     indices[2] = 2;
 
-    renderer.addMeshData(vertices, indices);
+    //renderer.addMeshData(vertices, indices);
 
     SWSButtonInfo buttonInfo;
     buttonInfo.offsetX = 25;
@@ -79,11 +79,11 @@ int main(int argc, char* argv[]){
 
     while(!window.shouldClose()){
         window.proc();
-        renderer.render();
+        //renderer.render();
         someWidget.setText(L"something");
     }
 
-    renderer.destroy();
+    //renderer.destroy();
     window.destroy();
 
 

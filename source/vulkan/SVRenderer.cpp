@@ -416,7 +416,9 @@ void SVRenderer::initSemaphore(){
 
 void SVRenderer::init() {
     createInstance();
+    std::cout << "before surface\n";
     initSurface();
+    std::cout << "After surface\n";
     initPhysicalDevices();
     createLogicalDevice();
     createSwapchain();

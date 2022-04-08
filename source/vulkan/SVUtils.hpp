@@ -6,7 +6,7 @@
 
 #ifdef __linux__
 #define RESTRICT __restrict__
-#elif #defined WIN32
+#elif defined _WIN32
 #define RESTRICT __restrict
 #else
     #define RESTRICT

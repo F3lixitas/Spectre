@@ -3,6 +3,7 @@
 void SWSLabel::setText(std::wstring text) {
     _text = text;
     clear();
+#if defined __linux__ || defined __APPLE__
 
     uint32_t values[3];
     xcb_font_t font;
@@ -26,5 +27,6 @@ void SWSLabel::setText(std::wstring text) {
 
     delete[] a;
     xcb_flush(_connection);
+#endif
 }
 

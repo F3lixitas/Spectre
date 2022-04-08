@@ -19,6 +19,7 @@ void SWSButton::create(SWSButtonInfo &info) {
     SWSContainer::create(wInfo);
 }
 
+#if defined __linux__ || defined __APPLE__
 void SWSButton::proc(xcb_generic_event_t *event) {
     std::cout << "button proc\n";
 
@@ -39,3 +40,4 @@ void SWSButton::proc(xcb_generic_event_t *event) {
 
     SWSContainer::proc(event);
 }
+#endif

@@ -23,8 +23,9 @@ private:
 public:
     void create(SWSWidgetInfo& info);
     void create(SWSButtonInfo& info);
-
+#if defined __linux__ || defined __APPLE__
     void proc(xcb_generic_event_t *event);
+#endif
 };
 
 #endif
