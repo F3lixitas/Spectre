@@ -16,11 +16,11 @@ class SVTexture{
 private:
     VkImageView     _imageView;
     VkImage         _image;
-    VkBuffer        _stagingBuffer;
-    VkDeviceMemory  _stagingBufferMemory;
     VkDeviceMemory  _imageMemory;
 
     int             _sizeX, _sizeY, _channels;
+
+    void changeImageLayout(VkDevice& device, VkCommandPool& cmdPool, VkQueue& queue, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 public:
     void load(VkDevice& device, VkPhysicalDevice& physicalDevice, VkCommandPool& cmdPool, VkQueue& queue, const char* path);
     void create(const VkDevice& device);

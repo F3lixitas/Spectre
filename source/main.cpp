@@ -21,7 +21,7 @@ void buttonClick(){
 }
 
 int main(int argc, char* argv[]){
-    SWSWidgetInfo winInfo;
+    SWSWidgetInfo winInfo{};
     winInfo.sizeX = 1280;
     winInfo.sizeY = 720;
 
@@ -29,7 +29,7 @@ int main(int argc, char* argv[]){
     window.create(winInfo);
 
     SVWidget rendererWidget;
-    SWSWidgetInfo rendererWidgetInfo;
+    SWSWidgetInfo rendererWidgetInfo{};
     rendererWidgetInfo.offsetX = 100;
     rendererWidgetInfo.offsetY = 20;
     rendererWidgetInfo.sizeX = 1000;
@@ -54,7 +54,7 @@ int main(int argc, char* argv[]){
 
     renderer.addMeshData(vertices, indices);
 
-    SWSButtonInfo buttonInfo;
+    SWSButtonInfo buttonInfo{};
     buttonInfo.offsetX = 25;
     buttonInfo.offsetY = 100;
     buttonInfo.sizeX = 50;
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]){
     SWSButton button;
     button.create(buttonInfo);
 
-    SWSWidgetInfo widgetInfo;
+    SWSWidgetInfo widgetInfo{};
     widgetInfo.sizeX = 50;
     widgetInfo.sizeY = 50;
     widgetInfo.parent = &button;

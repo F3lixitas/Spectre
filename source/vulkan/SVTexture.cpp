@@ -1,16 +1,60 @@
 #include "SVTexture.hpp"
 
+void SVTexture::changeImageLayout(VkDevice& device, VkCommandPool& cmdPool, VkQueue& queue, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
+    VkCommandBuffer cmdBuffer = beginSingleTimeCommands(cmdPool, device);
+
+    VkImageMemoryBarrier memBarrier{};
+    memBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    memBarrier.oldLayout = oldLayout;
+    memBarrier.newLayout = newLayout;
+    memBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    memBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    memBarrier.image = _image;
+    memBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    memBarrier.subresourceRange.baseMipLevel = 0;
+    memBarrier.subresourceRange.levelCount = 1;
+    memBarrier.subresourceRange.baseArrayLayer = 0;
+    memBarrier.subresourceRange.layerCount = 1;
+
+    VkPipelineStageFlags sourceStage;
+    VkPipelineStageFlags destinationStage;
+
+    if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+        memBarrier.srcAccessMask = 0;
+        memBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    } else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+        memBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        memBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+        sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    } else {
+        throw std::invalid_argument("unsupported layout transition!");
+    }
+
+    vkCmdPipelineBarrier(cmdBuffer, sourceStage, destinationStage, 0, 0,
+                         nullptr, 0, nullptr, 1, &memBarrier);
+
+    endSingleTimeCommands(cmdBuffer, cmdPool, queue, device);
+}
+
 void SVTexture::load(VkDevice& device, VkPhysicalDevice& physicalDevice, VkCommandPool& cmdPool, VkQueue& queue, const char *path) {
     stbi_uc* pixels = stbi_load(path, &_sizeX, &_sizeY, &_channels, STBI_rgb_alpha);
     VkDeviceSize imageSize = _sizeX * _sizeY * 4;
 
-    createBuffer(&device, &physicalDevice, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, _stagingBuffer,
-                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, _stagingBufferMemory);
+    VkBuffer        stagingBuffer;
+    VkDeviceMemory  stagingBufferMemory;
+
+    createBuffer(&device, &physicalDevice, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, stagingBuffer,
+                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBufferMemory);
 
     void* data;
-    vkMapMemory(device, _stagingBufferMemory, 0, imageSize, 0, &data);
+    vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
     memcpy(data, pixels, static_cast<size_t>(imageSize));
-    vkUnmapMemory(device, _stagingBufferMemory);
+    vkUnmapMemory(device, stagingBufferMemory);
 
     stbi_image_free(pixels);
 
@@ -48,6 +92,8 @@ void SVTexture::load(VkDevice& device, VkPhysicalDevice& physicalDevice, VkComma
 
     vkBindImageMemory(device, _image, _imageMemory, 0);
 
+    changeImageLayout(device, cmdPool, queue, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
     VkCommandBuffer cmdBuffer = beginSingleTimeCommands(cmdPool, device);
 
     VkBufferImageCopy region{};
@@ -66,9 +112,14 @@ void SVTexture::load(VkDevice& device, VkPhysicalDevice& physicalDevice, VkComma
             static_cast<uint32_t>(_sizeY),
             1
     };
-    vkCmdCopyBufferToImage(cmdBuffer, _stagingBuffer, _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+    vkCmdCopyBufferToImage(cmdBuffer, stagingBuffer, _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
     endSingleTimeCommands(cmdBuffer, cmdPool, queue, device);
+
+    changeImageLayout(device, cmdPool, queue, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    vkDestroyBuffer(device, stagingBuffer, nullptr);
+    vkFreeMemory(device, stagingBufferMemory, nullptr);
 }
 
 void SVTexture::create(const VkDevice& device) {
@@ -90,4 +141,6 @@ void SVTexture::create(const VkDevice& device) {
 
 void SVTexture::destroy(VkDevice &device) {
     vkDestroyImageView(device, _imageView, nullptr);
+    vkFreeMemory(device, _imageMemory, nullptr);
+    vkDestroyImage(device, _image, nullptr);
 }
