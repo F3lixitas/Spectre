@@ -3,6 +3,9 @@
 #include "vulkan/SVRenderer.hpp"
 #include "vulkan/SVMesh2D.hpp"
 #include "window/SWSButton.hpp"
+#include "logging/Console.hpp"
+
+#include <iostream>
 
 SVRenderer * Renderer;
 
@@ -20,6 +23,10 @@ void buttonClick(){
     Renderer->addMeshData(vertices, indices);
 }
 
+void buttonClick2(){
+    Renderer->removeMeshData(1);
+}
+
 int main(int argc, char* argv[]){
     SWSWidgetInfo winInfo{};
     winInfo.sizeX = 1280;
@@ -28,12 +35,21 @@ int main(int argc, char* argv[]){
     SWSWindow window;
     window.create(winInfo);
 
+    SWSConsole console;
+    SWSWidgetInfo consoleWidgetInfo{};
+    consoleWidgetInfo.offsetX = 100;
+    consoleWidgetInfo.offsetY = 520;
+    consoleWidgetInfo.sizeX = 1000;
+    consoleWidgetInfo.sizeY = 200;
+    consoleWidgetInfo.parent = &window;
+    console.create(consoleWidgetInfo);
+
     SVWidget rendererWidget;
     SWSWidgetInfo rendererWidgetInfo{};
     rendererWidgetInfo.offsetX = 100;
     rendererWidgetInfo.offsetY = 20;
     rendererWidgetInfo.sizeX = 1000;
-    rendererWidgetInfo.sizeY = 700;
+    rendererWidgetInfo.sizeY = 500;
     rendererWidgetInfo.parent = &window;
     rendererWidget.create(rendererWidgetInfo);
 
@@ -65,6 +81,17 @@ int main(int argc, char* argv[]){
     SWSButton button;
     button.create(buttonInfo);
 
+    SWSButtonInfo buttonInfo2;
+    buttonInfo2.offsetX = 25;
+    buttonInfo2.offsetY = 200;
+    buttonInfo2.sizeX = 50;
+    buttonInfo2.sizeY = 50;
+    buttonInfo2.parent = &window;
+    buttonInfo2.onClick = &buttonClick2;
+
+    SWSButton button2;
+    button2.create(buttonInfo2);
+
     SWSWidgetInfo widgetInfo{};
     widgetInfo.sizeX = 50;
     widgetInfo.sizeY = 50;
@@ -75,12 +102,17 @@ int main(int argc, char* argv[]){
 
     button.addChild(&someWidget, 1);
     window.addChild(&button, 3);
+    window.addChild(&button2, 4);
     window.addChild(&rendererWidget, 2);
+    window.addChild(&console, 5);
 
     while(!window.shouldClose()){
         window.proc();
         renderer.render();
-        someWidget.setText(L"something");
+        someWidget.setText(L"oui");
+        if(sNewLog()){
+            console.printLogs();
+        }
     }
 
     renderer.destroy();

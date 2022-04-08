@@ -21,23 +21,18 @@ void SWSButton::create(SWSButtonInfo &info) {
 
 #if defined __linux__ || defined __APPLE__
 void SWSButton::proc(xcb_generic_event_t *event) {
-    std::cout << "button proc\n";
-
-
     switch(event->response_type){
         case XCB_BUTTON_PRESS:
             xcb_button_press_event_t *bpevent = (xcb_button_press_event_t *)event;
-            if(bpevent->root == SWSContainer::_window) std::cout << "button clicked!" <<std::endl;
-            std::cout << (uint32_t)bpevent->detail << std::endl;
-            switch(bpevent->detail){
-                case 1:
-                    if(_onClick) _onClick();
-                    std::cout << "button clicked\n";
-                    break;
+            if(bpevent->event == SWSContainer::_window){
+                switch(bpevent->detail){
+                    case 1:
+                        if(_onClick) _onClick();
+                        break;
+                }
             }
             break;
     }
-
     SWSContainer::proc(event);
 }
 #endif

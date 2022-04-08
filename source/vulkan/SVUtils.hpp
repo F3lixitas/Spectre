@@ -1,6 +1,8 @@
 #ifndef SPECTRE_VULKAN_UTILS
 #define SPECTRE_VULKAN_UTILS
 
+#include "../conf.hpp"
+
 #include <vulkan/vulkan.hpp>
 #include <vector>
 
@@ -12,7 +14,7 @@
     #define RESTRICT
 #endif
 
-void createBuffer(VkDevice* logicalDevice, VkPhysicalDevice* physicalDevice, VkDeviceSize bufferSize, VkBufferUsageFlags usage, VkBuffer& buffer, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory& deviceMemory);
+SLog createBuffer(VkDevice* logicalDevice, VkPhysicalDevice* physicalDevice, VkDeviceSize bufferSize, VkBufferUsageFlags usage, VkBuffer& buffer, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory& deviceMemory);
 
 void createAndUploadBuffer(VkDevice& logicalDevice, VkPhysicalDevice& physicalDevice, VkDeviceSize bufferSize, VkBufferUsageFlags usage, VkBuffer& buffer, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory& deviceMemory);
 

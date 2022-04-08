@@ -7,9 +7,6 @@ void SWSWindow::proc() {
         SWSContainer::proc(_event);
     else
         _shouldClose = true;
-    static int i = 0;
-    std::cout << "proc n" << i << std::endl;
-    i++;
 
 #elif defined _WIN32
     MSG message;

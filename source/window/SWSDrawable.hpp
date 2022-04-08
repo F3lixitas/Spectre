@@ -6,6 +6,7 @@
 class SWSDrawable : public SWSWidget {
 protected:
 #if defined __linux__ || defined __APPLE__
+    uint32_t _width, _height;
     xcb_gcontext_t _gc;
 #endif
 public:

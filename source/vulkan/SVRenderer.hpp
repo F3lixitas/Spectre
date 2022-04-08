@@ -1,6 +1,8 @@
 #ifndef SPECTRE_VULKAN_RENDERER
 #define SPECTRE_VULKAN_RENDERER
 
+#include "../conf.hpp"
+
 #include "SVWidget.hpp"
 #include "SVSwapchain.hpp"
 #include "SVPipeline.hpp"

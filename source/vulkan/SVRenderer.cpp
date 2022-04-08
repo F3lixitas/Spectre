@@ -420,9 +420,7 @@ void SVRenderer::createTextureView() {
 
 void SVRenderer::init() {
     createInstance();
-    std::cout << "before surface\n";
     initSurface();
-    std::cout << "After surface\n";
     initPhysicalDevices();
     createLogicalDevice();
     createSwapchain();
@@ -435,6 +433,8 @@ void SVRenderer::init() {
     createDescriptorPool();
     createCommand();
     initSemaphore();
+
+    sAddLog({L"Renderer initialized.", S_LOG_INFO});
 }
 
 void SVRenderer::updateRenderingCommands(){
@@ -508,7 +508,8 @@ void SVRenderer::updateRenderingCommands(){
 
 void SVRenderer::addMeshData(std::vector<SVVertex2D>& vertices, std::vector<uint32_t>& indices){
     _mesh.push_back(SVMesh2D(&_device));
-    _mesh[_mesh.size() - 1].loadVertices(&vertices, &indices, &_physicalDevices[0]);
+    SLog log = _mesh[_mesh.size() - 1].loadVertices(&vertices, &indices, &_physicalDevices[0]);
+    ASSERT(log);
     vkDeviceWaitIdle(_device);
     updateRenderingCommands();
 }

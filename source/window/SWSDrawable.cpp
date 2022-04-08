@@ -2,12 +2,14 @@
 
 void SWSDrawable::clear() {
 #if defined __linux__ || __APPLE__
-    xcb_clear_area(_connection, false, _window, 0, 0, 100, 100); //todo : put adapted values
+    xcb_clear_area(_connection, false, _window, 0, 0, _width, _height);
 #endif
 }
 
 void SWSDrawable::create(const SWSWidgetInfo &info) {
     SWSWidget::create(info);
+    _width = info.sizeX;
+    _height = info.sizeY;
 #if defined __linux__ || defined __APPLE__
     _gc = xcb_generate_id (_connection);
     uint32_t values[2];
