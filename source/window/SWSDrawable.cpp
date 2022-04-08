@@ -11,7 +11,7 @@ void SWSDrawable::create(const SWSWidgetInfo &info) {
 #if defined __linux__ || defined __APPLE__
     _gc = xcb_generate_id (_connection);
     uint32_t values[2];
-    values[0] = _screen->black_pixel;
+    values[0] = 0xFF0000FF;
     values[1] = 0;
     xcb_create_gc (_connection, _gc, _window, XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES, values);
 

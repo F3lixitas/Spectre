@@ -10,6 +10,7 @@
 #endif
 
 #include "SWSFlags.hpp"
+#include "SWSColors.hpp"
 
 class SWSWidget;
 

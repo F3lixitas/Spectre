@@ -18,5 +18,8 @@ void createAndUploadBuffer(VkDevice& logicalDevice, VkPhysicalDevice& physicalDe
 
 uint32_t getMemoryType(VkPhysicalDevice& physicalDevice, uint32_t memTypeBits, VkMemoryPropertyFlags memProp);
 
+VkCommandBuffer beginSingleTimeCommands(VkCommandPool& commandPool, VkDevice& device);
+
+void endSingleTimeCommands(VkCommandBuffer& commandBuffer, VkCommandPool& commandPool, VkQueue& queue, VkDevice& device);
 
 #endif

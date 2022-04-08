@@ -12,7 +12,7 @@ SWSWindowHandle SWSWidget::getHandle() const {
     return {_widgetHandle};
 #endif
 }
-
+#if defined _WIN32
 LRESULT CALLBACK winProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam){
     switch(msg){
         case WM_CREATE:
@@ -25,6 +25,7 @@ LRESULT CALLBACK winProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam){
     }
     return 0;
 }
+#endif
 
 void SWSWidget::create(const SWSWidgetInfo& info) {
 #if defined __linux__ || defined __APPLE__
@@ -50,7 +51,7 @@ void SWSWidget::create(const SWSWidgetInfo& info) {
 
     uint32_t value[2];
 
-    value[0] = _screen->white_pixel;
+    value[0] = COLOR_BG1;
     value[1] = XCB_EVENT_MASK_EXPOSURE | info.flags;
 
     xcb_create_window(_connection, XCB_COPY_FROM_PARENT, _window, info.parent ? parentHandle.window : _screen->root,

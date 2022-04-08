@@ -1,13 +1,13 @@
 #include "window/SWSWindow.hpp"
 #include "window/SWSLabel.hpp"
 #include "vulkan/SVRenderer.hpp"
-#include "vulkan/SVMesh.hpp"
+#include "vulkan/SVMesh2D.hpp"
 #include "window/SWSButton.hpp"
 
 SVRenderer * Renderer;
 
 void buttonClick(){
-    std::vector<SVVertex> vertices(3);
+    std::vector<SVVertex2D> vertices(3);
     std::vector<uint32_t> indices(3);
     vertices[0] = {{-0.5, -0.5}, {1, 0, 0}, {0, 0}};
     vertices[1] = {{-0.5, 0.5}, {0, 1, 0}, {0, 0}};
@@ -41,7 +41,7 @@ int main(int argc, char* argv[]){
     renderer.init();
     Renderer = &renderer;
 
-    std::vector<SVVertex> vertices(3);
+    std::vector<SVVertex2D> vertices(3);
     std::vector<uint32_t> indices(3);
 
     vertices[0] = {{0.5, 0.5}, {1, 0, 0}, {0, 0}};
@@ -52,7 +52,7 @@ int main(int argc, char* argv[]){
     indices[1] = 1;
     indices[2] = 2;
 
-    //renderer.addMeshData(vertices, indices);
+    renderer.addMeshData(vertices, indices);
 
     SWSButtonInfo buttonInfo;
     buttonInfo.offsetX = 25;
@@ -79,11 +79,11 @@ int main(int argc, char* argv[]){
 
     while(!window.shouldClose()){
         window.proc();
-        //renderer.render();
+        renderer.render();
         someWidget.setText(L"something");
     }
 
-    //renderer.destroy();
+    renderer.destroy();
     window.destroy();
 
 

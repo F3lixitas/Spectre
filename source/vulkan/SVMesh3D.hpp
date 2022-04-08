@@ -6,8 +6,8 @@
 #include <glm/glm.hpp>
 #include "SVUtils.hpp"
 
-struct SVVertex{
-    glm::vec2 position;
+struct SVVertex3D{
+    glm::vec3 position;
     glm::vec3 color;
     glm::vec2 UV;
 
@@ -15,7 +15,7 @@ struct SVVertex{
     static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
 };
 
-class SVMesh{
+class SVMesh3D{
 private:
     VkBuffer               _vertexBuffer;
     VkBuffer               _indexBuffer;
@@ -39,7 +39,7 @@ public:
         vkDestroyBuffer(*_logicalDevice, _vertexBuffer, nullptr);
     }
 
-    void loadVertices(std::vector<SVVertex>* RESTRICT vertices, std::vector<uint32_t>* RESTRICT indices, VkPhysicalDevice* RESTRICT physicalDevice);
+    void loadVertices(std::vector<SVVertex3D>* RESTRICT vertices, std::vector<uint32_t>* RESTRICT indices, VkPhysicalDevice* RESTRICT physicalDevice);
     void draw(VkCommandBuffer* commandBuffer);
     void bind(VkCommandBuffer* commandBuffer);
 

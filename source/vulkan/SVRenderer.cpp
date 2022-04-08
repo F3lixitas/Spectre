@@ -240,8 +240,8 @@ void SVRenderer::initPipeline() {
     createShaderModule(defaultVertexShader, defaultVertModule);
     createShaderModule(defaultFragmentShader, defaultFragModule);
 
-    std::vector<VkVertexInputBindingDescription> bindingDesc = SVVertex::getBindingDescriptions();
-    std::vector<VkVertexInputAttributeDescription> attributeDesc = SVVertex::getAttributeDescriptions();
+    std::vector<VkVertexInputBindingDescription> bindingDesc = SVVertex2D::getBindingDescriptions();
+    std::vector<VkVertexInputAttributeDescription> attributeDesc = SVVertex2D::getAttributeDescriptions();
 
     SVPipelineConfig emptyPipelineConf = {0, 0, nullptr, nullptr};
     SVPipelineConfig defaultPipelineConf = {(uint32_t )attributeDesc.size(), (uint32_t )bindingDesc.size(), attributeDesc.data(), bindingDesc.data()};
@@ -414,6 +414,10 @@ void SVRenderer::initSemaphore(){
     vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_semaphoreEnd);
 }
 
+void SVRenderer::createTextureView() {
+
+}
+
 void SVRenderer::init() {
     createInstance();
     std::cout << "before surface\n";
@@ -502,8 +506,8 @@ void SVRenderer::updateRenderingCommands(){
 
 }
 
-void SVRenderer::addMeshData(std::vector<SVVertex>& vertices, std::vector<uint32_t>& indices){
-    _mesh.push_back(SVMesh(&_device));
+void SVRenderer::addMeshData(std::vector<SVVertex2D>& vertices, std::vector<uint32_t>& indices){
+    _mesh.push_back(SVMesh2D(&_device));
     _mesh[_mesh.size() - 1].loadVertices(&vertices, &indices, &_physicalDevices[0]);
     vkDeviceWaitIdle(_device);
     updateRenderingCommands();
@@ -511,7 +515,7 @@ void SVRenderer::addMeshData(std::vector<SVVertex>& vertices, std::vector<uint32
 
 void SVRenderer::removeMeshData(uint32_t index){
     if(index >= _mesh.size()) return;
-    std::vector<SVMesh>::iterator it = _mesh.begin();
+    std::vector<SVMesh2D>::iterator it = _mesh.begin();
     std::advance(it, index);
     vkDeviceWaitIdle(_device);
     _mesh[index].destroy();
