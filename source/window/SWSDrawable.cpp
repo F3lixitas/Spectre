@@ -7,7 +7,7 @@ void SWSDrawable::clear() {
 }
 
 void SWSDrawable::create(const SWSWidgetInfo &info) {
-    SWSWidget::create(info);
+    SWSContainer::create(info);
     _width = info.sizeX;
     _height = info.sizeY;
 #if defined __linux__ || defined __APPLE__

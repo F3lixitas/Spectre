@@ -1,9 +1,9 @@
 #ifndef SPECTRE_WINDOWING_SYSTEM_DRAWABLE
 #define SPECTRE_WINDOWING_SYSTEM_DRAWABLE
 
-#include "SWSWidget.hpp"
+#include "SWSContainer.hpp"
 
-class SWSDrawable : public SWSWidget {
+class SWSDrawable : public SWSContainer {
 protected:
 #if defined __linux__ || defined __APPLE__
     uint32_t _width, _height;
@@ -11,6 +11,7 @@ protected:
 #endif
 public:
     void create(const SWSWidgetInfo&);
+    virtual void draw(){}
     void clear();
 };
 

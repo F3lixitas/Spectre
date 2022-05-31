@@ -2,7 +2,7 @@
 
 void SWSLabel::setText(std::wstring text, uint32_t textColor, uint32_t backgroundColor) {
     _text = text;
-    clear();
+    //clear();
 #if defined __linux__ || defined __APPLE__
 
     uint32_t values[3];

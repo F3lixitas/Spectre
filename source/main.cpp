@@ -74,7 +74,7 @@ int main(int argc, char* argv[]){
     buttonInfo.offsetX = 25;
     buttonInfo.offsetY = 100;
     buttonInfo.sizeX = 50;
-    buttonInfo.sizeY = 50;
+    buttonInfo.sizeY = 40;
     buttonInfo.parent = &window;
     buttonInfo.onClick = &buttonClick;
 
@@ -97,19 +97,20 @@ int main(int argc, char* argv[]){
     widgetInfo.sizeY = 50;
     widgetInfo.parent = &button;
 
-    SWSLabel someWidget;
-    someWidget.create(widgetInfo);
+    //SWSLabel someWidget;
+    //someWidget.create(widgetInfo);
 
-    button.addChild(&someWidget, 1);
+    //button.addChild(&someWidget, 1);
     window.addChild(&button, 3);
     window.addChild(&button2, 4);
     window.addChild(&rendererWidget, 2);
     window.addChild(&console, 5);
 
     while(!window.shouldClose()){
+
         window.proc();
         renderer.render();
-        someWidget.setText(L"oui");
+        //someWidget.setText(L"oui");
         if(sNewLog()){
             console.printLogs();
         }

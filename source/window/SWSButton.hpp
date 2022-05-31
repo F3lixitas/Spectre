@@ -2,7 +2,6 @@
 #define SPECTRE_WINDOWING_SYSTEM_BUTTON
 
 #include "SWSDrawable.hpp"
-#include "SWSContainer.hpp"
 
 typedef struct SWSButtonInfo{
     int offsetX = 0;
@@ -16,13 +15,14 @@ typedef struct SWSButtonInfo{
     void (*onClick)() = nullptr;
 }SWSButtonInfo;
 
-class SWSButton : public SWSContainer {
+class SWSButton : public SWSDrawable {
 private:
 
     void (*_onClick)() = nullptr;
 public:
     void create(SWSWidgetInfo& info);
     void create(SWSButtonInfo& info);
+    void draw();
 #if defined __linux__ || defined __APPLE__
     void proc(xcb_generic_event_t *event);
 #endif

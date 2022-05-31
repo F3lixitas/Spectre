@@ -55,7 +55,7 @@ void SWSWidget::create(const SWSWidgetInfo& info) {
     value[1] = XCB_EVENT_MASK_EXPOSURE | info.flags;
 
     xcb_create_window(_connection, XCB_COPY_FROM_PARENT, _window, info.parent ? parentHandle.window : _screen->root,
-                      info.offsetX, info.offsetY, info.sizeX, info.sizeY, 1, XCB_WINDOW_CLASS_INPUT_OUTPUT,
+                      info.offsetX, info.offsetY, info.sizeX, info.sizeY, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT,
                       _screen->root_visual, XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK, value);
 
     if(!info.parent){

@@ -3,6 +3,7 @@
 
 #if defined __linux__ || __APPLE__
     #define SPECTRE_MOUSE_BUTTON_PRESS XCB_EVENT_MASK_BUTTON_PRESS
+
 #elif defined _WIN32
     #define SPECTRE_MOUSE_BUTTON_PRESS 0
 #endif
