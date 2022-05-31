@@ -1,7 +1,7 @@
 #include "window/SWSWindow.hpp"
 #include "window/SWSLabel.hpp"
 #include "vulkan/SVRenderer.hpp"
-#include "vulkan/SVMesh2D.hpp"
+#include "vulkan/SVMesh3D.hpp"
 #include "window/SWSButton.hpp"
 #include "logging/Console.hpp"
 
@@ -10,11 +10,11 @@
 SVRenderer * Renderer;
 
 void buttonClick(){
-    std::vector<SVVertex2D> vertices(3);
+    std::vector<SVVertex3D> vertices(3);
     std::vector<uint32_t> indices(3);
-    vertices[0] = {{-0.5, -0.5}, {1, 0, 0}, {0, 0}};
-    vertices[1] = {{-0.5, 0.5}, {0, 1, 0}, {0, 0}};
-    vertices[2] = {{0.5, -0.5}, {0, 0, 1}, {0, 0}};
+    vertices[0] = {{-0.5, -0.5, 0}, {1, 0, 0}, {0, 0}};
+    vertices[1] = {{-0.5, 0.5, 0}, {0, 1, 0}, {0, 0}};
+    vertices[2] = {{0.5, -0.5, 0}, {0, 0, 1}, {0, 0}};
 
     indices[0] = 0;
     indices[1] = 1;
@@ -57,12 +57,12 @@ int main(int argc, char* argv[]){
     renderer.init();
     Renderer = &renderer;
 
-    std::vector<SVVertex2D> vertices(3);
+    std::vector<SVVertex3D> vertices(3);
     std::vector<uint32_t> indices(3);
 
-    vertices[0] = {{0.5, 0.5}, {1, 0, 0}, {0, 0}};
-    vertices[1] = {{-0.5, 0.5}, {0, 1, 0}, {0, 0}};
-    vertices[2] = {{0.5, -0.5}, {0, 0, 1}, {0, 0}};
+    vertices[0] = {{0.5, 0.5, 0}, {1, 0, 0}, {0, 0}};
+    vertices[1] = {{-0.5, 0.5, 0}, {0, 1, 0}, {0, 0}};
+    vertices[2] = {{0.5, -0.5, 0}, {0, 0, 1}, {0, 0}};
 
     indices[0] = 0;
     indices[1] = 1;

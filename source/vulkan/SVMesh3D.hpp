@@ -27,7 +27,7 @@ private:
     uint32_t               _amountOfVertices;
     uint32_t               _amountOfIndices;
 public:
-    SVMesh(VkDevice* logicalDevice){
+    SVMesh3D(VkDevice* logicalDevice){
         _logicalDevice = logicalDevice;
     }
 
@@ -39,7 +39,7 @@ public:
         vkDestroyBuffer(*_logicalDevice, _vertexBuffer, nullptr);
     }
 
-    void loadVertices(std::vector<SVVertex3D>* RESTRICT vertices, std::vector<uint32_t>* RESTRICT indices, VkPhysicalDevice* RESTRICT physicalDevice);
+    SLog loadVertices(std::vector<SVVertex3D>* RESTRICT vertices, std::vector<uint32_t>* RESTRICT indices, VkPhysicalDevice* RESTRICT physicalDevice);
     void draw(VkCommandBuffer* commandBuffer);
     void bind(VkCommandBuffer* commandBuffer);
 

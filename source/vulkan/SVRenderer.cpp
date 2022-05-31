@@ -240,8 +240,8 @@ void SVRenderer::initPipeline() {
     createShaderModule(defaultVertexShader, defaultVertModule);
     createShaderModule(defaultFragmentShader, defaultFragModule);
 
-    std::vector<VkVertexInputBindingDescription> bindingDesc = SVVertex2D::getBindingDescriptions();
-    std::vector<VkVertexInputAttributeDescription> attributeDesc = SVVertex2D::getAttributeDescriptions();
+    std::vector<VkVertexInputBindingDescription> bindingDesc = SVVertex3D::getBindingDescriptions();
+    std::vector<VkVertexInputAttributeDescription> attributeDesc = SVVertex3D::getAttributeDescriptions();
 
     SVPipelineConfig emptyPipelineConf = {0, 0, nullptr, nullptr};
     SVPipelineConfig defaultPipelineConf = {(uint32_t )attributeDesc.size(), (uint32_t )bindingDesc.size(), attributeDesc.data(), bindingDesc.data()};
@@ -506,8 +506,8 @@ void SVRenderer::updateRenderingCommands(){
 
 }
 
-void SVRenderer::addMeshData(std::vector<SVVertex2D>& vertices, std::vector<uint32_t>& indices){
-    _mesh.push_back(SVMesh2D(&_device));
+void SVRenderer::addMeshData(std::vector<SVVertex3D>& vertices, std::vector<uint32_t>& indices){
+    _mesh.push_back(SVMesh3D(&_device));
     SLog log = _mesh[_mesh.size() - 1].loadVertices(&vertices, &indices, &_physicalDevices[0]);
     ASSERT(log);
     vkDeviceWaitIdle(_device);
@@ -516,7 +516,7 @@ void SVRenderer::addMeshData(std::vector<SVVertex2D>& vertices, std::vector<uint
 
 void SVRenderer::removeMeshData(uint32_t index){
     if(index >= _mesh.size()) return;
-    std::vector<SVMesh2D>::iterator it = _mesh.begin();
+    std::vector<SVMesh3D>::iterator it = _mesh.begin();
     std::advance(it, index);
     vkDeviceWaitIdle(_device);
     _mesh[index].destroy();

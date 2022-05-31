@@ -6,7 +6,7 @@
 #include "SVWidget.hpp"
 #include "SVSwapchain.hpp"
 #include "SVPipeline.hpp"
-#include "SVMesh2D.hpp"
+#include "SVMesh3D.hpp"
 #include <vector>
 
 class SVRenderer {
@@ -39,7 +39,7 @@ private:
     VkFormat                _displayImageFormat     = VK_FORMAT_B8G8R8A8_SRGB;
     VkExtent2D              _displaySize;
 
-    std::vector<SVMesh2D>     _mesh;
+    std::vector<SVMesh3D>     _mesh;
 
     /////////// VULKAN SETUP METHODS ///////////
     void createInstance();
@@ -67,7 +67,7 @@ public:
     void init();
     void destroy();
 
-    void addMeshData(std::vector<SVVertex2D>& vertices, std::vector<uint32_t>& indices);
+    void addMeshData(std::vector<SVVertex3D>& vertices, std::vector<uint32_t>& indices);
     void removeMeshData(uint32_t index);
     void render();
 };
