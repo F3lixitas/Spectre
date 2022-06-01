@@ -89,11 +89,8 @@ void SWSWidget::create(const SWSWidgetInfo& info) {
 
     std::cout <<"window created !\n";
     if(info.parent != nullptr){
-        _widgetHandle = ::CreateWindow(LPCSTR("Spectre"),  LPCSTR(""),
-                                       WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-                                       info.offsetX, info.offsetY, info.sizeX, info.sizeY,
-                                       info.parent->getHandle().windowHandle, nullptr,
-                                       nullptr, nullptr);
+        _widgetHandle = ::CreateWindowExW(WS_EX_OVERLAPPEDWINDOW, LPCWSTR(L"Spectre"), LPCWSTR(L"Spectre"), WS_OVERLAPPEDWINDOW,
+                                         info.offsetX, info.offsetY, info.sizeX, info.sizeY, info.parent->getHandle().windowHandle, nullptr, nullptr, nullptr);
     } else {
         WNDCLASSEX wc;
         wc.cbClsExtra = 0;
@@ -107,7 +104,7 @@ void SWSWidget::create(const SWSWidgetInfo& info) {
         wc.lpszMenuName = LPCSTR ("");
         wc.lpfnWndProc = &winProc;
 
-        ::RegisterClassEx(&wc);
+        if(!::RegisterClassEx(&wc)) abort();
         _widgetHandle = ::CreateWindowExW(WS_EX_OVERLAPPEDWINDOW, LPCWSTR(L"Spectre"), LPCWSTR(L"Spectre"), WS_OVERLAPPEDWINDOW,
                                           info.offsetX, info.offsetY, info.sizeX, info.sizeY, nullptr, nullptr, nullptr, nullptr);
 

@@ -5,8 +5,8 @@
 
 class SWSDrawable : public SWSContainer {
 protected:
-#if defined __linux__ || defined __APPLE__
     uint32_t _width, _height;
+#if defined __linux__ || defined __APPLE__
     xcb_gcontext_t _gc;
 #endif
 public:
