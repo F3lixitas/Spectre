@@ -89,8 +89,8 @@ void SWSWidget::create(const SWSWidgetInfo& info) {
 
     std::cout <<"window created !\n";
     if(info.parent != nullptr){
-        _widgetHandle = ::CreateWindowExW(WS_EX_OVERLAPPEDWINDOW, LPCWSTR(L"Spectre"), LPCWSTR(L"Spectre"), WS_OVERLAPPEDWINDOW,
-                                         info.offsetX, info.offsetY, info.sizeX, info.sizeY, info.parent->getHandle().windowHandle, nullptr, nullptr, nullptr);
+        _widgetHandle = ::CreateWindowExW(0, LPCWSTR(L"Spectre"), nullptr, WS_CHILD | WS_BORDER,
+                                          info.offsetX, info.offsetY, info.sizeX, info.sizeY, info.parent->_widgetHandle, nullptr, nullptr, nullptr);
     } else {
         WNDCLASSEX wc;
         wc.cbClsExtra = 0;
