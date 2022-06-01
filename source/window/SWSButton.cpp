@@ -3,9 +3,11 @@
 void SWSButton::create(SWSWidgetInfo &info) {
     info.flags |= SPECTRE_MOUSE_BUTTON_PRESS;
     SWSDrawable::create(info);
+#if defined __linux__ || defined __APPLE__
     uint32_t        values[2]  = {_screen->black_pixel, 0};
     xcb_change_gc(_connection, _gc, XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES, values);
     xcb_flush(_connection);
+#endif
 }
 
 void SWSButton::create(SWSButtonInfo &info) {
@@ -20,12 +22,15 @@ void SWSButton::create(SWSButtonInfo &info) {
     wInfo.onDestroy = info.onDestroy;
     wInfo.flags = SPECTRE_MOUSE_BUTTON_PRESS;
     SWSDrawable::create(wInfo);
+#if defined __linux__ || defined __APPLE__
     uint32_t        values[2]  = {_screen->black_pixel, 0};
     xcb_change_gc(_connection, _gc, XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES, values);
     xcb_flush(_connection);
+#endif
 }
 
 void SWSButton::draw() {
+#if defined __linux__ || defined __APPLE__
     xcb_arc_t            arcs[] = {
             {0, 0, 10, 10, 90 << 6, 90 << 6},
             {0, (int16_t)(_height - 11), 10, 10, 180 << 6, 90 << 6},
@@ -40,6 +45,7 @@ void SWSButton::draw() {
     xcb_poly_arc(_connection, _window, _gc, 4, arcs);
     xcb_poly_segment(_connection, _window, _gc, 4, segments);
     xcb_flush (_connection);
+#endif
 }
 
 #if defined __linux__ || defined __APPLE__

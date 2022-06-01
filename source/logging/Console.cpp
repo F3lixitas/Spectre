@@ -17,6 +17,7 @@ void SWSConsole::printLogs() {
 }
 
 void SWSConsole::updateDisplay() {
+#if defined __linux__ || defined __APPLE__
     uint16_t lines = (_height - 4) / 15;
     if(logs->size() > 0 && lines > 0){
         SLog& log = *logs->next(true);
@@ -68,7 +69,7 @@ void SWSConsole::updateDisplay() {
             }
         }
     }
-
+#endif
 }
 
 void SWSConsole::drawText(std::wstring text, uint32_t posX, uint32_t posY, uint32_t color) {
