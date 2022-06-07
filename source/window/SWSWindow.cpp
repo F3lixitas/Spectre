@@ -22,7 +22,9 @@ bool SWSWindow::shouldClose() {
 }
 
 void SWSWindow::destroy() {
+#if defined __linux__ || __APPLE__
     xcb_flush(_connection);
     free(_event);
     xcb_disconnect(_connection);
+#endif
 }

@@ -1,14 +1,8 @@
 #include "SVWidget.hpp"
+#include <iostream>
 
 void SVWidget::loadSurface(VkInstance &instance, VkSurfaceKHR &surface) {
-    //VkXlibSurfaceCreateInfoKHR xlibCreateInfo;
-    //xlibCreateInfo.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
-    //xlibCreateInfo.pNext = nullptr;
-    //xlibCreateInfo.flags = 0;
-    //xlibCreateInfo.dpy = _display;
-    //xlibCreateInfo.window = _window;
-//
-    //vkCreateXlibSurfaceKHR(instance, &xlibCreateInfo, nullptr, &surface);
+#if defined __linux__ || defined __APPLE__
 
     VkXcbSurfaceCreateInfoKHR xcbCreateInfo;
     xcbCreateInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
@@ -18,5 +12,18 @@ void SVWidget::loadSurface(VkInstance &instance, VkSurfaceKHR &surface) {
     xcbCreateInfo.window = _window;
 
     vkCreateXcbSurfaceKHR(instance, &xcbCreateInfo, nullptr, &surface);
+
+#elif defined _WIN32
+
+    VkWin32SurfaceCreateInfoKHR win32CreateInfo;
+    win32CreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+    win32CreateInfo.pNext = nullptr;
+    win32CreateInfo.flags = 0;
+    win32CreateInfo.hwnd = _widgetHandle;
+    win32CreateInfo.hinstance = nullptr;
+    std::cout << "before\n";
+    vkCreateWin32SurfaceKHR(instance, &win32CreateInfo, nullptr, &surface);
+    std::cout << "after\n";
+#endif
 }
 

@@ -1,12 +1,14 @@
 #ifndef SPECTRE_VULKAN_VERTEX
 #define SPECTRE_VULKAN_VERTEX
 
+#include "../conf.hpp"
+
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include "SVUtils.hpp"
 
-struct SVVertex{
+struct SVVertex2D{
     glm::vec2 position;
     glm::vec3 color;
     glm::vec2 UV;
@@ -15,7 +17,7 @@ struct SVVertex{
     static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
 };
 
-class SVMesh{
+class SVMesh2D{
 private:
     VkBuffer               _vertexBuffer;
     VkBuffer               _indexBuffer;
@@ -27,7 +29,7 @@ private:
     uint32_t               _amountOfVertices;
     uint32_t               _amountOfIndices;
 public:
-    SVMesh(VkDevice* logicalDevice){
+    SVMesh2D(VkDevice* logicalDevice){
         _logicalDevice = logicalDevice;
     }
 
@@ -39,7 +41,7 @@ public:
         vkDestroyBuffer(*_logicalDevice, _vertexBuffer, nullptr);
     }
 
-    void loadVertices(std::vector<SVVertex>* RESTRICT vertices, std::vector<uint32_t>* RESTRICT indices, VkPhysicalDevice* RESTRICT physicalDevice);
+    SLog loadVertices(std::vector<SVVertex2D>* RESTRICT vertices, std::vector<uint32_t>* RESTRICT indices, VkPhysicalDevice* RESTRICT physicalDevice);
     void draw(VkCommandBuffer* commandBuffer);
     void bind(VkCommandBuffer* commandBuffer);
 

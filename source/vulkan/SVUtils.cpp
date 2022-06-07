@@ -1,7 +1,7 @@
 #include "SVUtils.hpp"
 #include <cstring>
 
-void createBuffer(VkDevice* logicalDevice, VkPhysicalDevice* physicalDevice, VkDeviceSize bufferSize, VkBufferUsageFlags usage, VkBuffer& buffer, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory& deviceMemory){
+SLog createBuffer(VkDevice* logicalDevice, VkPhysicalDevice* physicalDevice, VkDeviceSize bufferSize, VkBufferUsageFlags usage, VkBuffer& buffer, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory& deviceMemory){
     VkBufferCreateInfo bufferInfo;
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.pNext = nullptr;
@@ -12,7 +12,9 @@ void createBuffer(VkDevice* logicalDevice, VkPhysicalDevice* physicalDevice, VkD
     bufferInfo.queueFamilyIndexCount = 0;
     bufferInfo.pQueueFamilyIndices = nullptr;
 
-    vkCreateBuffer(*logicalDevice, &bufferInfo, nullptr, &buffer);
+    VkResult res = vkCreateBuffer(*logicalDevice, &bufferInfo, nullptr, &buffer);
+    if(res != VK_SUCCESS) return {L"Could not create buffer. ", S_LOG_ERROR};
+
     VkMemoryRequirements memoryRequirements;
 
     vkGetBufferMemoryRequirements(*logicalDevice, buffer, &memoryRequirements);
@@ -25,9 +27,12 @@ void createBuffer(VkDevice* logicalDevice, VkPhysicalDevice* physicalDevice, VkD
     memoryAllocateInfo.allocationSize = memoryRequirements.size;
     memoryAllocateInfo.memoryTypeIndex = memIndex;
 
-    vkAllocateMemory(*logicalDevice, &memoryAllocateInfo, nullptr, &deviceMemory);
+    res = vkAllocateMemory(*logicalDevice, &memoryAllocateInfo, nullptr, &deviceMemory);
+    if(res != VK_SUCCESS) return {L"Could not allocate memory. ", S_LOG_ERROR};
 
-    vkBindBufferMemory(*logicalDevice, buffer, deviceMemory, 0);
+    res = vkBindBufferMemory(*logicalDevice, buffer, deviceMemory, 0);
+    if(res != VK_SUCCESS) return {L"Could not bind memory. ", S_LOG_ERROR};
+    return {L"", S_LOG_SUCCESS};
 }
 
 void createAndUploadBuffer(VkDevice& logicalDevice, VkPhysicalDevice* physicalDevice, VkDeviceSize bufferSize, VkBufferUsageFlags usage, VkBuffer& buffer, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory& deviceMemory){
@@ -53,4 +58,37 @@ uint32_t getMemoryType(VkPhysicalDevice& physicalDevice, uint32_t memTypeBits, V
     }
 
     return memIndex;
+}
+
+VkCommandBuffer beginSingleTimeCommands(VkCommandPool& commandPool, VkDevice& device) {
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandPool = commandPool;
+    allocInfo.commandBufferCount = 1;
+
+    VkCommandBuffer commandBuffer;
+    vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer);
+
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+    return commandBuffer;
+}
+
+void endSingleTimeCommands(VkCommandBuffer& commandBuffer, VkCommandPool& commandPool, VkQueue& queue, VkDevice& device) {
+    vkEndCommandBuffer(commandBuffer);
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(queue);
+
+    vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 }

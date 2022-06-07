@@ -41,10 +41,33 @@ public:
         }
     }
 
+    T* next(bool reset = false) {
+        static __indexedListBody<T>* currentElement = _firstElement;
+        if(currentElement == nullptr || reset) currentElement = _firstElement;
+        T* element = currentElement->element;
+        currentElement = currentElement->next;
+        return element;
+    }
+
+    unsigned int size() const{
+        return _numberOfElements;
+    }
+
+    void deleteLast(){
+        __indexedListBody<T>* currentElement = _firstElement;
+        for(unsigned int i = 0; i < _numberOfElements - 1; i++){
+            currentElement = currentElement->next;
+        }
+        delete currentElement->next->element;
+        delete currentElement->next;
+        currentElement->next = nullptr;
+        _numberOfElements--;
+    }
+
     void deleteElementByIndex(unsigned long index){
         __indexedListBody<T>* currentElement = _firstElement;
         __indexedListBody<T>* previousElement = nullptr;
-        for(unsigned int i; i < _numberOfElements; i++){
+        for(unsigned int i = 0; i < _numberOfElements; i++){
                if(currentElement->index == index){
                    if(previousElement == nullptr) _firstElement = currentElement->next;
                    previousElement->next = currentElement->next;
@@ -57,10 +80,9 @@ public:
         }
     }
 
-
     void forEach(void (*callback)(T*)){
         __indexedListBody<T>* currentElement = _firstElement;
-        for(unsigned int i; i < _numberOfElements; i++){
+        for(unsigned int i = 0; i < _numberOfElements; i++){
             callback(currentElement->element);
             currentElement = currentElement->next;
         }
@@ -68,7 +90,7 @@ public:
     template<typename G>
     void forEach(void (*callback)(T*, G), G arg1){
         __indexedListBody<T>* currentElement = _firstElement;
-        for(unsigned int i; i < _numberOfElements; i++){
+        for(unsigned int i = 0; i < _numberOfElements; i++){
             callback(currentElement->element, arg1);
             currentElement = currentElement->next;
         }

@@ -1,10 +1,12 @@
 #ifndef SPECTRE_VULKAN_RENDERER
 #define SPECTRE_VULKAN_RENDERER
 
+#include "../conf.hpp"
+
 #include "SVWidget.hpp"
 #include "SVSwapchain.hpp"
 #include "SVPipeline.hpp"
-#include "SVMesh.hpp"
+#include "SVMesh3D.hpp"
 #include <vector>
 
 class SVRenderer {
@@ -37,7 +39,7 @@ private:
     VkFormat                _displayImageFormat     = VK_FORMAT_B8G8R8A8_SRGB;
     VkExtent2D              _displaySize;
 
-    std::vector<SVMesh>     _mesh;
+    std::vector<SVMesh3D>     _mesh;
 
     /////////// VULKAN SETUP METHODS ///////////
     void createInstance();
@@ -55,6 +57,8 @@ private:
     void createCommand();
     void initSemaphore();
 
+    void createTextureView();
+
     void updateRenderingCommands();
     void createShaderModule(const std::vector<char>& code, VkShaderModule& shaderModule);
 public:
@@ -63,7 +67,7 @@ public:
     void init();
     void destroy();
 
-    void addMeshData(std::vector<SVVertex>& vertices, std::vector<uint32_t>& indices);
+    void addMeshData(std::vector<SVVertex3D>& vertices, std::vector<uint32_t>& indices);
     void removeMeshData(uint32_t index);
     void render();
 };

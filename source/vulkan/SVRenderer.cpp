@@ -25,7 +25,11 @@ void SVRenderer::createInstance() {
 
     std::vector<const char*> layers = {"VK_LAYER_KHRONOS_validation"};
 
+#if defined __linux__ || defined __APPLE__
     const char* extensions[] = {"VK_KHR_xcb_surface", "VK_KHR_surface"};
+#elif defined _WIN32
+    const char* extensions[] = {"VK_KHR_win32_surface", "VK_KHR_surface"};
+#endif
 
     VkInstanceCreateInfo instCreateInfo;
     instCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -240,8 +244,8 @@ void SVRenderer::initPipeline() {
     createShaderModule(defaultVertexShader, defaultVertModule);
     createShaderModule(defaultFragmentShader, defaultFragModule);
 
-    std::vector<VkVertexInputBindingDescription> bindingDesc = SVVertex::getBindingDescriptions();
-    std::vector<VkVertexInputAttributeDescription> attributeDesc = SVVertex::getAttributeDescriptions();
+    std::vector<VkVertexInputBindingDescription> bindingDesc = SVVertex3D::getBindingDescriptions();
+    std::vector<VkVertexInputAttributeDescription> attributeDesc = SVVertex3D::getAttributeDescriptions();
 
     SVPipelineConfig emptyPipelineConf = {0, 0, nullptr, nullptr};
     SVPipelineConfig defaultPipelineConf = {(uint32_t )attributeDesc.size(), (uint32_t )bindingDesc.size(), attributeDesc.data(), bindingDesc.data()};
@@ -414,6 +418,10 @@ void SVRenderer::initSemaphore(){
     vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_semaphoreEnd);
 }
 
+void SVRenderer::createTextureView() {
+
+}
+
 void SVRenderer::init() {
     createInstance();
     initSurface();
@@ -429,6 +437,8 @@ void SVRenderer::init() {
     createDescriptorPool();
     createCommand();
     initSemaphore();
+
+    sAddLog({L"Renderer initialized.", S_LOG_INFO});
 }
 
 void SVRenderer::updateRenderingCommands(){
@@ -500,16 +510,17 @@ void SVRenderer::updateRenderingCommands(){
 
 }
 
-void SVRenderer::addMeshData(std::vector<SVVertex>& vertices, std::vector<uint32_t>& indices){
-    _mesh.push_back(SVMesh(&_device));
-    _mesh[_mesh.size() - 1].loadVertices(&vertices, &indices, &_physicalDevices[0]);
+void SVRenderer::addMeshData(std::vector<SVVertex3D>& vertices, std::vector<uint32_t>& indices){
+    _mesh.push_back(SVMesh3D(&_device));
+    SLog log = _mesh[_mesh.size() - 1].loadVertices(&vertices, &indices, &_physicalDevices[0]);
+    ASSERT(log);
     vkDeviceWaitIdle(_device);
     updateRenderingCommands();
 }
 
 void SVRenderer::removeMeshData(uint32_t index){
     if(index >= _mesh.size()) return;
-    std::vector<SVMesh>::iterator it = _mesh.begin();
+    std::vector<SVMesh3D>::iterator it = _mesh.begin();
     std::advance(it, index);
     vkDeviceWaitIdle(_device);
     _mesh[index].destroy();
