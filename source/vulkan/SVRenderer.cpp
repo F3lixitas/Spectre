@@ -25,7 +25,11 @@ void SVRenderer::createInstance() {
 
     std::vector<const char*> layers = {"VK_LAYER_KHRONOS_validation"};
 
+#if defined __linux__ || defined __APPLE__
     const char* extensions[] = {"VK_KHR_xcb_surface", "VK_KHR_surface"};
+#elif defined _WIN32
+    const char* extensions[] = {"VK_KHR_win32_surface", "VK_KHR_surface"};
+#endif
 
     VkInstanceCreateInfo instCreateInfo;
     instCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;

@@ -8,9 +8,10 @@ void SWSDrawable::clear() {
 
 void SWSDrawable::create(const SWSWidgetInfo &info) {
     SWSContainer::create(info);
+
+#if defined __linux__ || defined __APPLE__
     _width = info.sizeX;
     _height = info.sizeY;
-#if defined __linux__ || defined __APPLE__
     _gc = xcb_generate_id (_connection);
     uint32_t values[2];
     values[0] = 0xFF0000FF;

@@ -1,4 +1,5 @@
 #include "SVWidget.hpp"
+#include <iostream>
 
 void SVWidget::loadSurface(VkInstance &instance, VkSurfaceKHR &surface) {
 #if defined __linux__ || defined __APPLE__
@@ -20,9 +21,9 @@ void SVWidget::loadSurface(VkInstance &instance, VkSurfaceKHR &surface) {
     win32CreateInfo.flags = 0;
     win32CreateInfo.hwnd = _widgetHandle;
     win32CreateInfo.hinstance = nullptr;
-
+    std::cout << "before\n";
     vkCreateWin32SurfaceKHR(instance, &win32CreateInfo, nullptr, &surface);
-
+    std::cout << "after\n";
 #endif
 }
 
