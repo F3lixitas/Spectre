@@ -74,7 +74,7 @@ void SWSWidget::create(const SWSWidgetInfo& info) {
 
 #elif defined _WIN32
 
-    wProc = [](HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) -> LRESULT CALLBACK {
+    wProc = (LRESULT CALLBACK (*)(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam))[](HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) -> LRESULT CALLBACK {
         switch(msg){
             case WM_CREATE:
                 break;

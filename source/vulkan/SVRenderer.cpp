@@ -1,6 +1,7 @@
 #include "SVRenderer.hpp"
 #include <iostream>
 #include "../utils/SOpenFile.hpp"
+#include "../window/SWSRenderWindow.hpp"
 
 void SVRenderer::createShaderModule(const std::vector<char> &code, VkShaderModule &shaderModule) {
     VkShaderModuleCreateInfo shaderInfo;
@@ -25,17 +26,22 @@ void SVRenderer::createInstance() {
 
     std::vector<const char*> layers = {"VK_LAYER_KHRONOS_validation"};
 
+    /*
 #if defined __linux__ || defined __APPLE__
     const char* extensions[] = {"VK_KHR_xcb_surface", "VK_KHR_surface"};
 #elif defined _WIN32
     const char* extensions[] = {"VK_KHR_win32_surface", "VK_KHR_surface"};
 #endif
+*/
+
+    uint32_t count;
+    const char** extensions = glfwGetRequiredInstanceExtensions(&count);
 
     VkInstanceCreateInfo instCreateInfo;
     instCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     instCreateInfo.pNext = nullptr;
     instCreateInfo.flags = 0;
-    instCreateInfo.enabledExtensionCount = 2;
+    instCreateInfo.enabledExtensionCount = count;
     instCreateInfo.enabledLayerCount = layers.size();
     instCreateInfo.pApplicationInfo = &appInfo;
     instCreateInfo.ppEnabledExtensionNames = extensions;
@@ -45,7 +51,10 @@ void SVRenderer::createInstance() {
 }
 
 void SVRenderer::initSurface() {
-    _widget->loadSurface(_instance, _surface);
+    if(_widget)
+        _widget->loadSurface(_instance, _surface);
+    else
+        _window->loadSurface(_instance, _surface);
 }
 
 void SVRenderer::initPhysicalDevices() {
@@ -608,6 +617,10 @@ SVRenderer::SVRenderer(SVWidget *widget) {
     }
     else
         _widget = widget;
+}
+
+SVRenderer::SVRenderer(SWSRenderWindow *window) {
+    _window = window;
 }
 
 SVRenderer::~SVRenderer() {

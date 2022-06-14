@@ -9,9 +9,14 @@
 #include "SVMesh3D.hpp"
 #include <vector>
 
+#include <GLFW/glfw3.h>
+
+class SWSRenderWindow;
+
 class SVRenderer {
 private:
     SVWidget*               _widget;
+    SWSRenderWindow*        _window;
     SVSwapchain             _swapchain;
     std::vector<SVPipeline> _pipelines;
 
@@ -63,6 +68,7 @@ private:
     void createShaderModule(const std::vector<char>& code, VkShaderModule& shaderModule);
 public:
     SVRenderer(SVWidget *widget = nullptr);
+    SVRenderer(SWSRenderWindow *window);
     ~SVRenderer();
     void init();
     void destroy();
@@ -70,6 +76,7 @@ public:
     void addMeshData(std::vector<SVVertex3D>& vertices, std::vector<uint32_t>& indices);
     void removeMeshData(uint32_t index);
     void render();
+
 };
 
 #endif

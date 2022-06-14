@@ -57,6 +57,8 @@ public:
 
 #if defined __linux__ || defined __APPLE__
     virtual void proc(xcb_generic_event_t* event);
+#elif defined _WIN32
+    virtual void proc(){}
 #endif
     SWSWindowHandle getHandle() const;
     void onCreate(int, int);
