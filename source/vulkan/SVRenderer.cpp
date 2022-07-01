@@ -51,10 +51,11 @@ void SVRenderer::createInstance() {
 }
 
 void SVRenderer::initSurface() {
-    if(_widget)
-        _widget->loadSurface(_instance, _surface);
-    else
-        _window->loadSurface(_instance, _surface);
+//    if(_widget)
+//        _widget->loadSurface(_instance, _surface);
+//    else
+        _window->loadSurface(_instance, &_surface);
+
 }
 
 void SVRenderer::initPhysicalDevices() {
