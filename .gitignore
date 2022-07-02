@@ -39,3 +39,4 @@
 .vs
 out
 config.txt
+*.json
