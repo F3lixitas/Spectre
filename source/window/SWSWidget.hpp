@@ -45,7 +45,7 @@ protected:
     int                     _screenID;
 #elif _WIN32
     HWND                    _widgetHandle;
-    LRESULT CALLBACK (*wProc)(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+    //LRESULT CALLBACK (*wProc)(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 #endif
 
     void (*_onCreate)(int, int) = nullptr;

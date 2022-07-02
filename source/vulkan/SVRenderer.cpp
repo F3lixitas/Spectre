@@ -239,11 +239,11 @@ void SVRenderer::createDescriptorSetLayout() {
 }
 
 void SVRenderer::initPipeline() {
-    auto emptyVertexShader   = readFile("../source/vulkan/shaders/emptyShader.vert.spv");
-    auto emptyFragmentShader = readFile("../source/vulkan/shaders/emptyShader.frag.spv");
+    auto emptyVertexShader   = readFile("shaders/emptyShader.vert.spv");//copy shader from source/vulkan/shaders
+    auto emptyFragmentShader = readFile("shaders/emptyShader.frag.spv");
 
-    auto defaultVertexShader   = readFile("../source/vulkan/shaders/simpleShader.vert.spv");
-    auto defaultFragmentShader = readFile("../source/vulkan/shaders/simpleShader.frag.spv");
+    auto defaultVertexShader   = readFile("shaders/simpleShader.vert.spv");
+    auto defaultFragmentShader = readFile("shaders/simpleShader.frag.spv");
 
     VkShaderModule emptyVertModule;
     VkShaderModule emptyFragModule;

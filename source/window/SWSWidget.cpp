@@ -74,7 +74,7 @@ void SWSWidget::create(const SWSWidgetInfo& info) {
 
 #elif defined _WIN32
 
-    wProc = (LRESULT CALLBACK (*)(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam))[](HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) -> LRESULT CALLBACK {
+    /*wProc = (LRESULT CALLBACK(*)(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam))[](HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) -> LRESULT CALLBACK {
         switch(msg){
             case WM_CREATE:
                 break;
@@ -85,9 +85,9 @@ void SWSWidget::create(const SWSWidgetInfo& info) {
                 return ::DefWindowProc(hwnd, msg, wparam, lparam);
         }
         return 0;
-    };
+    };*/
 
-    std::cout <<"window created !\n";
+    std::cout << "window created !\n";
     if(info.parent != nullptr){
         _widgetHandle = ::CreateWindowExW(0, LPCWSTR(L"Spectre"), nullptr, WS_CHILD | WS_BORDER,
                                           info.offsetX, info.offsetY, info.sizeX, info.sizeY, info.parent->_widgetHandle, nullptr, nullptr, nullptr);
@@ -102,7 +102,7 @@ void SWSWidget::create(const SWSWidgetInfo& info) {
         wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
         wc.lpszClassName = LPCSTR ("Spectre");
         wc.lpszMenuName = LPCSTR ("");
-        wc.lpfnWndProc = &winProc;
+        wc.lpfnWndProc = nullptr;
 
         if(!::RegisterClassEx(&wc)) abort();
         _widgetHandle = ::CreateWindowExW(WS_EX_OVERLAPPEDWINDOW, LPCWSTR(L"Spectre"), LPCWSTR(L"Spectre"), WS_OVERLAPPEDWINDOW,
