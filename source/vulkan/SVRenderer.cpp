@@ -62,7 +62,6 @@ void SVRenderer::initPhysicalDevices() {
     vkEnumeratePhysicalDevices(_instance, &_amountOfPhysicalDevices, nullptr);
     _physicalDevices = new VkPhysicalDevice[_amountOfPhysicalDevices];
     vkEnumeratePhysicalDevices(_instance, &_amountOfPhysicalDevices, _physicalDevices);
-
     for(int i = 0; i < _amountOfPhysicalDevices; i++){
         VkPhysicalDeviceProperties props;
         vkGetPhysicalDeviceProperties(_physicalDevices[i], &props);
@@ -70,6 +69,7 @@ void SVRenderer::initPhysicalDevices() {
                   << "\nvendor ID : " << props.vendorID << "\ndevice ID : " << props.deviceID << "\ndevice type : "
                   << props.deviceType << "\ndevice name : " << props.deviceName << "\npipeline cache UUID : "
                   << props.pipelineCacheUUID << "\n\n";
+        if(props.deviceType == 2) _physicalDevice = &_physicalDevices[i];
     }
 
 }
@@ -77,12 +77,13 @@ void SVRenderer::initPhysicalDevices() {
 void SVRenderer::createLogicalDevice() {
     VkPhysicalDeviceFeatures physicalDevFeatures = {};
     physicalDevFeatures.samplerAnisotropy = VK_TRUE;
-    vkGetPhysicalDeviceFeatures(_physicalDevices[0], &physicalDevFeatures);
+    // todo make a selection as my laptop's graphic card is n2
+    vkGetPhysicalDeviceFeatures(*_physicalDevice, &physicalDevFeatures);
 
     uint32_t amountOfQueues;
-    vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevices[0], &amountOfQueues, nullptr);
+    vkGetPhysicalDeviceQueueFamilyProperties(*_physicalDevice, &amountOfQueues, nullptr);
     VkQueueFamilyProperties* queueProperties = new VkQueueFamilyProperties[amountOfQueues];
-    vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevices[0], &amountOfQueues, queueProperties);
+    vkGetPhysicalDeviceQueueFamilyProperties(*_physicalDevice, &amountOfQueues, queueProperties);
 
     uint32_t queueCount = 0;
     uint32_t queueIndex = 0;
@@ -124,12 +125,12 @@ void SVRenderer::createLogicalDevice() {
     devCreateInfo.queueCreateInfoCount = 1;
     devCreateInfo.pQueueCreateInfos = &queueCreateInfo;
 
-    vkCreateDevice(_physicalDevices[0], &devCreateInfo, nullptr, &_device);
+    vkCreateDevice(*_physicalDevice, &devCreateInfo, nullptr, &_device);
 
     vkGetDeviceQueue(_device, queueIndex, 0, &_queue);
 
     VkBool32 surfaceSupport;
-    vkGetPhysicalDeviceSurfaceSupportKHR(_physicalDevices[0], queueIndex, _surface, &surfaceSupport);
+    vkGetPhysicalDeviceSurfaceSupportKHR(*_physicalDevice, queueIndex, _surface, &surfaceSupport);
 
     delete[] queueProperties;
     delete[] queuePrio;
@@ -137,14 +138,14 @@ void SVRenderer::createLogicalDevice() {
 
 void SVRenderer::createSwapchain() {
     VkSurfaceCapabilitiesKHR surfaceCapa;
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_physicalDevices[0], _surface, &surfaceCapa);
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(*_physicalDevice, _surface, &surfaceCapa);
     _displaySize = surfaceCapa.currentExtent;
 
     VkRect2D dimensions;
     dimensions.extent = _displaySize;
     dimensions.offset.x = 0;
     dimensions.offset.y = 0;
-    _swapchain.init(_device, _physicalDevices, _surface, dimensions, _displayImageFormat, _displayImageColorSpace);
+    _swapchain.init(_device, _physicalDevice, _surface, dimensions, _displayImageFormat, _displayImageColorSpace);
 }
 
 void SVRenderer::createImageViews() {
@@ -522,7 +523,7 @@ void SVRenderer::updateRenderingCommands(){
 
 void SVRenderer::addMeshData(std::vector<SVVertex3D>& vertices, std::vector<uint32_t>& indices){
     _mesh.push_back(SVMesh3D(&_device));
-    SLog log = _mesh[_mesh.size() - 1].loadVertices(&vertices, &indices, &_physicalDevices[0]);
+    SLog log = _mesh[_mesh.size() - 1].loadVertices(&vertices, &indices, _physicalDevice);
     ASSERT(log);
     vkDeviceWaitIdle(_device);
     updateRenderingCommands();

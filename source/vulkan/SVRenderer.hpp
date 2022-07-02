@@ -24,6 +24,7 @@ private:
     VkInstance              _instance;
     VkSurfaceKHR            _surface;
     VkPhysicalDevice*       _physicalDevices; //
+    VkPhysicalDevice*       _physicalDevice;
     uint32_t                _amountOfPhysicalDevices;
     VkDevice                _device;
     VkQueue                 _queue;
