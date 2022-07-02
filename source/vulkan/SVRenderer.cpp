@@ -448,7 +448,7 @@ void SVRenderer::init() {
     initPipeline();
     initFramebuffers();
     initCommandPool();
-    _texture.load(_device, *_physicalDevice, _commandPool, _queue, "data/spectre.jpg");
+    _texture.load(_device, *_physicalDevice, _commandPool, _queue, "data/spectre.png");
     _texture.create(_device);
     createDescriptorPool();
     createCommand();
