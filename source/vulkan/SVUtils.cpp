@@ -1,5 +1,6 @@
 #include "SVUtils.hpp"
 #include <cstring>
+#include <iostream>
 
 SLog createBuffer(VkDevice* logicalDevice, VkPhysicalDevice* physicalDevice, VkDeviceSize bufferSize, VkBufferUsageFlags usage, VkBuffer& buffer, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory& deviceMemory){
     VkBufferCreateInfo bufferInfo;
@@ -13,13 +14,15 @@ SLog createBuffer(VkDevice* logicalDevice, VkPhysicalDevice* physicalDevice, VkD
     bufferInfo.pQueueFamilyIndices = nullptr;
 
     VkResult res = vkCreateBuffer(*logicalDevice, &bufferInfo, nullptr, &buffer);
-    if(res != VK_SUCCESS) return {L"Could not create buffer. ", S_LOG_ERROR};
-
+    if(res != VK_SUCCESS) {
+        std::cout << "Could not create buffer !" << res  << ", " << bufferSize << std::endl;
+        return {L"Could not create buffer. ", S_LOG_ERROR};
+    }
     VkMemoryRequirements memoryRequirements;
 
     vkGetBufferMemoryRequirements(*logicalDevice, buffer, &memoryRequirements);
 
-    uint32_t memIndex = getMemoryType(physicalDevice[0], memoryRequirements.memoryTypeBits, memoryProperty);
+    uint32_t memIndex = getMemoryType(*physicalDevice, memoryRequirements.memoryTypeBits, memoryProperty);
 
     VkMemoryAllocateInfo memoryAllocateInfo;
     memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -28,10 +31,16 @@ SLog createBuffer(VkDevice* logicalDevice, VkPhysicalDevice* physicalDevice, VkD
     memoryAllocateInfo.memoryTypeIndex = memIndex;
 
     res = vkAllocateMemory(*logicalDevice, &memoryAllocateInfo, nullptr, &deviceMemory);
-    if(res != VK_SUCCESS) return {L"Could not allocate memory. ", S_LOG_ERROR};
+    if(res != VK_SUCCESS){
+        std::cout << "Could not allocate memory !" << std::endl;
+        return {L"Could not allocate memory. ", S_LOG_ERROR};
+    }
 
     res = vkBindBufferMemory(*logicalDevice, buffer, deviceMemory, 0);
-    if(res != VK_SUCCESS) return {L"Could not bind memory. ", S_LOG_ERROR};
+    if(res != VK_SUCCESS){
+        std::cout << "Could not bind memory !" << std::endl;
+        return {L"Could not bind memory. ", S_LOG_ERROR};
+    }
     return {L"", S_LOG_SUCCESS};
 }
 

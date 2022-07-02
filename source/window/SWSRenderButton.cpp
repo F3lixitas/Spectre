@@ -12,9 +12,9 @@ void SWSRenderButton::create(SWSWidgetInfo &info, SWSRenderWindow *parent){
 
     std::vector<SVVertex3D> vertices = {
             {{relPosX, relPosY, 0}, {1, 1, 1}, {0, 0}},
-            {{relPosX, relPosY + relSizeY, 0}, {1, 1, 1}, {0, 0}},
-            {{relPosX + relSizeX, relPosY, 0}, {1, 1, 1}, {0, 0}},
-            {{relPosX + relSizeX, relPosY + relSizeY, 0}, {1, 1, 1}, {0, 0}}
+            {{relPosX, relPosY + relSizeY, 0}, {1, 1, 1}, {0, 1}},
+            {{relPosX + relSizeX, relPosY, 0}, {1, 1, 1}, {1, 0}},
+            {{relPosX + relSizeX, relPosY + relSizeY, 0}, {1, 1, 1}, {1, 1}}
     };
 
     std::vector<uint32_t> indices = {0, 1, 2, 1, 2, 3};

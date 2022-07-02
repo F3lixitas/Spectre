@@ -7,6 +7,7 @@
 #include "SVSwapchain.hpp"
 #include "SVPipeline.hpp"
 #include "SVMesh3D.hpp"
+#include "SVTexture.hpp"
 #include <vector>
 
 #include <GLFW/glfw3.h>
@@ -45,7 +46,8 @@ private:
     VkFormat                _displayImageFormat     = VK_FORMAT_B8G8R8A8_SRGB;
     VkExtent2D              _displaySize;
 
-    std::vector<SVMesh3D>     _mesh;
+    std::vector<SVMesh3D>   _mesh;
+    SVTexture               _texture;
 
     /////////// VULKAN SETUP METHODS ///////////
     void createInstance();

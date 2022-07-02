@@ -76,7 +76,7 @@ void SVRenderer::initPhysicalDevices() {
 
 void SVRenderer::createLogicalDevice() {
     VkPhysicalDeviceFeatures physicalDevFeatures = {};
-    physicalDevFeatures.samplerAnisotropy = VK_TRUE;
+    physicalDevFeatures.samplerAnisotropy = VK_TRUE; // enable anisotropic filtering
     // todo make a selection as my laptop's graphic card is n2
     vkGetPhysicalDeviceFeatures(*_physicalDevice, &physicalDevFeatures);
 
@@ -228,6 +228,10 @@ void SVRenderer::createDescriptorSetLayout() {
     layoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
     layoutBinding.pImmutableSamplers = nullptr;
 
+    /// Experimental section
+
+    ///
+
     VkDescriptorSetLayoutCreateInfo layoutInfo;
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.pNext = nullptr;
@@ -268,6 +272,8 @@ void SVRenderer::initPipeline() {
     _pipelines.push_back(SVPipeline());
     _pipelines[1].init(defaultVertModule, defaultFragModule, _displaySize, defaultPipelineConf);
     _pipelines[1].enable(_device, _renderPass, _descriptorSetLayout);
+
+
 
     vkDestroyShaderModule(_device, emptyVertModule, nullptr);
     vkDestroyShaderModule(_device, emptyFragModule, nullptr);
@@ -330,10 +336,10 @@ void SVRenderer::createDescriptorPool() {
 
     vkAllocateDescriptorSets(_device, &descSetAllocate, &_descriptorSet);
 
-    //VkDescriptorImageInfo imageInfo;
-    //imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    //imageInfo.imageView = *_textures[0].getImageView();
-    //imageInfo.sampler = *_textures[0].getSampler();
+    VkDescriptorImageInfo imageInfo;
+    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    imageInfo.imageView = _texture.getImageView();
+    imageInfo.sampler = _texture.getSampler();
 
     VkWriteDescriptorSet writeDescSet{};
     writeDescSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -342,13 +348,10 @@ void SVRenderer::createDescriptorPool() {
     writeDescSet.dstArrayElement = 0;
     writeDescSet.descriptorCount = 1;
     writeDescSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-//    writeDescSet.pImageInfo = &imageInfo;
-    writeDescSet.pImageInfo = nullptr;
-    writeDescSet.pBufferInfo = nullptr;
-    writeDescSet.pTexelBufferView = nullptr;
+    writeDescSet.pImageInfo = &imageInfo;
 
 
-    //vkUpdateDescriptorSets(_device, 1, &writeDescSet, 0, nullptr);
+    vkUpdateDescriptorSets(_device, 1, &writeDescSet, 0, nullptr);
 }
 
 void SVRenderer::createCommand(){
@@ -445,6 +448,8 @@ void SVRenderer::init() {
     initPipeline();
     initFramebuffers();
     initCommandPool();
+    _texture.load(_device, *_physicalDevice, _commandPool, _queue, "data/spectre.jpg");
+    _texture.create(_device);
     createDescriptorPool();
     createCommand();
     initSemaphore();
@@ -590,6 +595,8 @@ void SVRenderer::destroy() {
     for(int i = 0; i < _amountOfSwapchainImages; i++){
         vkDestroyFramebuffer(_device, _framebuffers[i], nullptr);
     }
+
+    _texture.destroy(_device);
 
     vkDestroyCommandPool(_device, _commandPool, nullptr);
 

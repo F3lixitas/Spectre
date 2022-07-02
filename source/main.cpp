@@ -20,8 +20,8 @@ int main(int argc, char* argv[]){
 
     SWSRenderButton button;
     SWSWidgetInfo binfo;
-    binfo.sizeX = 100;
-    binfo.sizeY = 50;
+    binfo.sizeX = 300;
+    binfo.sizeY = 150;
     binfo.offsetX = 50;
     binfo.offsetY = 50;
     button.create(binfo, &window);
