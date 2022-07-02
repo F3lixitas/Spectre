@@ -1,14 +1,11 @@
+# If you are using Windows, you'll need an external config.txt file. Then build like this : cmake -C config.txt
+
 cmake_minimum_required(VERSION 3.20)
 project(Spectre)
 
 set(CMAKE_CXX_STANDARD 23)
 
 add_executable(Spectre source/window/SWSWidget.cpp source/main.cpp source/window/SWSWindow.cpp source/window/SWSContainer.cpp source/window/SWSDrawable.cpp source/window/SWSLabel.cpp source/window/SWSButton.cpp source/vulkan/SVWidget.cpp source/vulkan/SVRenderer.cpp source/vulkan/SVSwapchain.cpp source/vulkan/SVPipeline.cpp source/vulkan/SVUtils.cpp source/vulkan/SVMesh3D.cpp source/vulkan/SVTexture.cpp source/logging/Console.cpp source/conf.cpp source/window/SWSRenderWindow.cpp source/window/SWSRenderButton.cpp)
-
-set(LOCAL_GLFW_PATH D:/programmes/GLFWSDK)
-set(LOCAL_GLM_PATH D:/programmes/GLMSDK/glm)
-
-set(USE_VISUAL_STUDIO true)
 
 if(UNIX)
     find_package(X11 REQUIRED)
