@@ -28,8 +28,15 @@ else()
         target_link_directories(${PROJECT_NAME} PUBLIC ${LOCAL_GLFW_PATH}/lib-mingw-w64)
     endif()
     target_link_libraries(${PROJECT_NAME} glfw3)
+
 endif()
 
 find_package(Vulkan REQUIRED)
 target_include_directories(${PROJECT_NAME} PUBLIC ${Vulkan_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} Vulkan::Vulkan)
+
+add_custom_command(TARGET ${PROJECT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${PROJECT_SOURCE_DIR}/source/vulkan/shaders
+        shaders)
