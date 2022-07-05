@@ -5,7 +5,7 @@ project(Spectre)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(Spectre source/window/SWSWidget.cpp source/main.cpp source/window/SWSWindow.cpp source/window/SWSContainer.cpp source/window/SWSDrawable.cpp source/window/SWSLabel.cpp source/window/SWSButton.cpp source/vulkan/SVWidget.cpp source/vulkan/SVRenderer.cpp source/vulkan/SVSwapchain.cpp source/vulkan/SVPipeline.cpp source/vulkan/SVUtils.cpp source/vulkan/SVMesh3D.cpp source/vulkan/SVTexture.cpp source/logging/Console.cpp source/conf.cpp source/window/SWSRenderWindow.cpp source/window/SWSRenderButton.cpp)
+add_executable(Spectre source/window/SWSWidget.cpp source/main.cpp source/window/SWSWindow.cpp source/window/SWSContainer.cpp source/window/SWSDrawable.cpp source/window/SWSLabel.cpp source/window/SWSButton.cpp source/vulkan/SVWidget.cpp source/vulkan/SVRenderer.cpp source/vulkan/SVSwapchain.cpp source/vulkan/SVPipeline.cpp source/vulkan/SVUtils.cpp source/vulkan/SVMesh3D.cpp source/vulkan/SVTexture.cpp source/logging/Console.cpp source/conf.cpp source/window/SWSRenderWindow.cpp source/window/SWSRenderButton.cpp source/vulkan/SVRenderer3D.cpp source/vulkan/SVRenderer2D.cpp)
 
 if(UNIX)
     find_package(X11 REQUIRED)
@@ -44,5 +44,14 @@ add_custom_command(TARGET ${PROJECT_NAME}
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${PROJECT_SOURCE_DIR}/data
         data)
+
+
+# Tool for creating materials
+
+project(MatGen)
+
+add_executable(MatGen source/matGen/main.cpp)
+
+
 
 

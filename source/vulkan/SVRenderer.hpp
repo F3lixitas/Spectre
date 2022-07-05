@@ -9,6 +9,7 @@
 #include "SVMesh3D.hpp"
 #include "SVTexture.hpp"
 #include <vector>
+#include "../core/SC_Material.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -46,8 +47,9 @@ private:
     VkFormat                _displayImageFormat     = VK_FORMAT_B8G8R8A8_SRGB;
     VkExtent2D              _displaySize;
 
-    std::vector<SVMesh3D>   _mesh;
-    SVTexture               _texture;
+    std::vector<SVMesh3D>       _mesh;
+    SVTexture                   _texture;
+    std::vector<SC_Material>    _materials;
 
     /////////// VULKAN SETUP METHODS ///////////
     void createInstance();

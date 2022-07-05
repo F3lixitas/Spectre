@@ -1,0 +1,17 @@
+SpectreMaterialVersion(1.0);
+
+// valid inputs are : UV, VERTEX_COLOR
+Input{
+    spectreTexture = texture(data/spectre.png);
+    uv = getInput(UV);
+    vertexColor = getInput(VERTEX_COLOR);
+}
+
+// valid outputs are : OUTPUT_COLOR
+Output{
+    outColor = getOutput(OUTPUT_COLOR);
+}
+
+Body{
+    outColor = makeTexture(spectreTexture, uv) + vertexColor;
+}

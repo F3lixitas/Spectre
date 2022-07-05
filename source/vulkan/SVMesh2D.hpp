@@ -1,5 +1,5 @@
-#ifndef SPECTRE_VULKAN_VERTEX
-#define SPECTRE_VULKAN_VERTEX
+#ifndef SPECTRE_VULKAN_MESH_2D
+#define SPECTRE_VULKAN_MESH_2D
 
 #include "../conf.hpp"
 
