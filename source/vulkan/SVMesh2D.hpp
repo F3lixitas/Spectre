@@ -7,6 +7,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include "SVUtils.hpp"
+#include "../core/SC_Material.hpp"
 
 struct SVVertex2D{
     glm::vec2 position;
@@ -19,15 +20,17 @@ struct SVVertex2D{
 
 class SVMesh2D{
 private:
-    VkBuffer               _vertexBuffer;
-    VkBuffer               _indexBuffer;
+    VkBuffer                _vertexBuffer;
+    VkBuffer                _indexBuffer;
 
-    VkDeviceMemory         _vertexBufferMemory;
-    VkDeviceMemory         _indexBufferMemory;
+    VkDeviceMemory          _vertexBufferMemory;
+    VkDeviceMemory          _indexBufferMemory;
 
-    VkDevice*              _logicalDevice;
-    uint32_t               _amountOfVertices;
-    uint32_t               _amountOfIndices;
+    VkDevice*               _logicalDevice;
+    uint32_t                _amountOfVertices;
+    uint32_t                _amountOfIndices;
+
+    SC_Material*            _material;
 public:
     SVMesh2D(VkDevice* logicalDevice){
         _logicalDevice = logicalDevice;

@@ -71,6 +71,9 @@ private:
 
     void updateRenderingCommands();
     void createShaderModule(const std::vector<char>& code, VkShaderModule& shaderModule);
+
+    void renderToImage(SVRenderer* renderer);
+    void loadImage(VkImage image);
 public:
     SVRenderer(SVWidget *widget = nullptr);
     SVRenderer(SWSRenderWindow *window);

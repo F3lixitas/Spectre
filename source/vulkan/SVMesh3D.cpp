@@ -28,13 +28,15 @@ SLog SVMesh3D::loadVertices(std::vector<SVVertex3D> *vertices, std::vector<uint3
 }
 
 void SVMesh3D::draw(VkCommandBuffer *commandBuffer) {
+    VkDeviceSize offsets[] = {0};
+    vkCmdBindVertexBuffers(*commandBuffer, 0, 1, &_vertexBuffer, offsets);
+    vkCmdBindIndexBuffer(*commandBuffer, _indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+
     vkCmdDrawIndexed(*commandBuffer, _amountOfIndices, 1, 0, 0, 0);
 }
 
 void SVMesh3D::bind(VkCommandBuffer *commandBuffer) {
-    VkDeviceSize offsets[] = {0};
-    vkCmdBindVertexBuffers(*commandBuffer, 0, 1, &_vertexBuffer, offsets);
-    vkCmdBindIndexBuffer(*commandBuffer, _indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+
 }
 
 std::vector<VkVertexInputAttributeDescription> SVVertex3D::getAttributeDescriptions() {

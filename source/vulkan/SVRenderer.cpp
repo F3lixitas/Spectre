@@ -244,7 +244,7 @@ void SVRenderer::initPipeline() {
     auto emptyVertexShader   = readFile("shaders/emptyShader.vert.spv");//copy shader from source/vulkan/shaders
     auto emptyFragmentShader = readFile("shaders/emptyShader.frag.spv");
 
-    auto defaultVertexShader   = readFile("shaders/simpleShader.vert.spv");
+    auto defaultVertexShader   = readFile("shaders/defaultVertexShader2D.vert.spv");
     auto defaultFragmentShader = readFile("shaders/simpleShader.frag.spv");
 
     VkShaderModule emptyVertModule;
@@ -576,6 +576,14 @@ void SVRenderer::render(){
     presentInfo.pResults = nullptr;
 
     vkQueuePresentKHR(_queue, &presentInfo);
+}
+
+void SVRenderer::renderToImage(SVRenderer* renderer){
+
+}
+
+void SVRenderer::loadImage(VkImage image) {
+
 }
 
 void SVRenderer::destroy() {

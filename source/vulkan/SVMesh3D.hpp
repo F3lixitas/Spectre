@@ -5,6 +5,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include "SVUtils.hpp"
+#include "../core/SC_Material.hpp"
 
 struct SVVertex3D{
     glm::vec3 position;
@@ -26,6 +27,8 @@ private:
     VkDevice*              _logicalDevice;
     uint32_t               _amountOfVertices;
     uint32_t               _amountOfIndices;
+
+    SC_Material*            _material;
 public:
     SVMesh3D(VkDevice* logicalDevice){
         _logicalDevice = logicalDevice;
