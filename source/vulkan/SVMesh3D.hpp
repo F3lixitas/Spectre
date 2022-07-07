@@ -28,7 +28,7 @@ private:
     uint32_t               _amountOfVertices;
     uint32_t               _amountOfIndices;
 
-    SC_Material*            _material;
+    SC_Material*            _material = nullptr;
 public:
     SVMesh3D(VkDevice* logicalDevice){
         _logicalDevice = logicalDevice;
@@ -43,6 +43,7 @@ public:
     }
 
     SLog loadVertices(std::vector<SVVertex3D>* RESTRICT vertices, std::vector<uint32_t>* RESTRICT indices, VkPhysicalDevice* RESTRICT physicalDevice);
+    void setMaterial(SC_Material* material){_material = material;}
     void draw(VkCommandBuffer* commandBuffer);
     void bind(VkCommandBuffer* commandBuffer);
 

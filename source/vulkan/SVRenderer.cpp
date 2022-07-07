@@ -496,8 +496,10 @@ void SVRenderer::updateRenderingCommands(){
 
         vkCmdBeginRenderPass(_commandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
+        std::cout << "binding...\n";
         vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines[1].getPipeline());
 
+        std::cout << "after bind\n";
         VkViewport viewport;
         viewport.x = 0.0f;
         viewport.y = 0.0f;
@@ -533,6 +535,11 @@ void SVRenderer::addMeshData(std::vector<SVVertex3D>& vertices, std::vector<uint
     ASSERT(log);
     vkDeviceWaitIdle(_device);
     updateRenderingCommands();
+}
+
+void SVRenderer::loadMaterial(SC_Material* material) {
+    _materials.push_back(material);
+
 }
 
 void SVRenderer::removeMeshData(uint32_t index){

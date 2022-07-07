@@ -28,6 +28,9 @@ SLog SVMesh3D::loadVertices(std::vector<SVVertex3D> *vertices, std::vector<uint3
 }
 
 void SVMesh3D::draw(VkCommandBuffer *commandBuffer) {
+    if(_material != nullptr)
+        _material->i_bindMaterial(commandBuffer);
+
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(*commandBuffer, 0, 1, &_vertexBuffer, offsets);
     vkCmdBindIndexBuffer(*commandBuffer, _indexBuffer, 0, VK_INDEX_TYPE_UINT32);

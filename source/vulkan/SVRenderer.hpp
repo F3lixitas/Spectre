@@ -49,7 +49,7 @@ private:
 
     std::vector<SVMesh3D>       _mesh;
     SVTexture                   _texture;
-    std::vector<SC_Material>    _materials;
+    std::vector<SC_Material*>   _materials;
 
     /////////// VULKAN SETUP METHODS ///////////
     void createInstance();
@@ -81,6 +81,7 @@ public:
     void init();
     void destroy();
 
+    void loadMaterial(SC_Material* material);
     void addMeshData(std::vector<SVVertex3D>& vertices, std::vector<uint32_t>& indices);
     void removeMeshData(uint32_t index);
     void render();

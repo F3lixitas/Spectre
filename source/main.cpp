@@ -1,5 +1,6 @@
 #include "window/SWSRenderWindow.hpp"
 #include "window/SWSRenderButton.hpp"
+#include "core/SC_Material.hpp"
 
 /*
  *
@@ -25,6 +26,8 @@ int main(int argc, char* argv[]){
     binfo.offsetX = 50;
     binfo.offsetY = 50;
     button.create(binfo, &window);
+
+    SC_Material mat;
 
     while(!window.shouldClose()){
         window.proc();
