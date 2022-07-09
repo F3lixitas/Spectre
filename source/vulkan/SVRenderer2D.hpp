@@ -8,6 +8,8 @@
 class SVRenderer2D : SVRenderer{
 private:
     std::vector<SVMesh2D> _meshes;
+
+    void updateRenderingCommands();
 public:
     void addMeshData(std::vector<SVVertex2D>& vertices, std::vector<uint32_t>& indices, SC_Material* material);
 };

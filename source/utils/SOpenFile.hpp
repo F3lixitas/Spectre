@@ -1,8 +1,11 @@
+#ifndef SPECTRE_OPEN_FILE
+#define SPECTRE_OPEN_FILE
+
 #include <fstream>
 #include <vector>
 #include <string>
 
-std::vector<char> readFile(const char* filepath){
+inline std::vector<char> readFile(const char* filepath){
     std::ifstream file(filepath, std::ios::binary | std::ios::ate);
     if(file){
         size_t fileSize = (size_t)file.tellg();
@@ -18,3 +21,5 @@ std::vector<char> readFile(const char* filepath){
         throw std::runtime_error(error.data());
     }
 }
+
+#endif

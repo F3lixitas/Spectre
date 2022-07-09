@@ -16,7 +16,7 @@
 class SWSRenderWindow;
 
 class SVRenderer {
-private:
+protected:
     SVWidget*               _widget;
     SWSRenderWindow*        _window;
     SVSwapchain             _swapchain;

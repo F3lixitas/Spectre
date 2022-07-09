@@ -6,7 +6,9 @@ layout(location = 1) in vec2 UV;
 layout (location = 0) out vec4 outColor;
 layout(binding = 0) uniform sampler2D tex;
 void main(){
-    
-    outColor = texture(tex, UV);
+    vec4 col = texture(tex, UV);
+    if(col.w < 0.5f)
+        discard;
+    outColor = col;
     //outColor = vec4(color, 1.0f);
 }

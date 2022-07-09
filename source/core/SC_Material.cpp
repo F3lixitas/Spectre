@@ -38,8 +38,8 @@ void SC_Material::i_bindMaterial(VkCommandBuffer* commandBuffer){
 void SC_Material::loadFromFiles(const char* pathV, const char* pathF) {
     // loads a shader, todo make it load a material file
 
-    std::vector<char> vertexShader   = readFile("shaders/emptyShader.vert.spv");//copy shader from source/vulkan/shaders
-    std::vector<char> fragmentShader = readFile("shaders/emptyShader.frag.spv");
+    std::vector<char> vertexShader   = readFile(pathV);//copy shader from source/vulkan/shaders
+    std::vector<char> fragmentShader = readFile(pathF);
 
     _vertexShaderBufferSize = vertexShader.size() / sizeof(uint32_t);
     _fragmentShaderBufferSize = fragmentShader.size() / sizeof(uint32_t);
