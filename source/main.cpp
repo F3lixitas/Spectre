@@ -27,8 +27,6 @@ int main(int argc, char* argv[]){
     binfo.offsetY = 50;
     button.create(binfo, &window);
 
-    SC_Material mat;
-
     while(!window.shouldClose()){
         window.proc();
     }

@@ -14,6 +14,8 @@ private:
     VkDeviceMemory  _imageMemory;
     VkSampler       _sampler;
 
+    VkDescriptorImageInfo _descriptor;
+
     int             _sizeX, _sizeY, _channels;
     void changeImageLayout(VkDevice& device, VkCommandPool& cmdPool, VkQueue& queue, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 public:

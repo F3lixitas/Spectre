@@ -6,10 +6,9 @@
 
 class SWSRenderButton{
     SWSRenderWindow*    _parent;
-    SC_Material         _material;
 public:
+    SWSRenderButton() = default;
     void create(SWSWidgetInfo &info, SWSRenderWindow *parent);
-
 };
 
 #endif

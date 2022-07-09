@@ -3,7 +3,6 @@
 
 #include "../conf.hpp"
 
-#include "SVWidget.hpp"
 #include "SVSwapchain.hpp"
 #include "SVPipeline.hpp"
 #include "SVMesh3D.hpp"
@@ -17,9 +16,8 @@ class SWSRenderWindow;
 
 class SVRenderer {
 protected:
-    SVWidget*               _widget;
     SWSRenderWindow*        _window;
-    SVSwapchain             _swapchain;
+    SVSwapchain             _swapchain{&_device};
     std::vector<SVPipeline> _pipelines;
 
     //////// VULKAN FRAMEWORK ATTRIBUTES ////////
@@ -31,7 +29,6 @@ protected:
     VkDevice                _device;
     VkQueue                 _queue;
     VkImageView*            _imageViews; //
-    VkRenderPass            _renderPass;
     VkDescriptorSetLayout   _descriptorSetLayout;
     VkFramebuffer*          _framebuffers; //
     VkCommandPool           _commandPool;
@@ -49,7 +46,7 @@ protected:
 
     std::vector<SVMesh3D>       _mesh;
     SVTexture                   _texture;
-    std::vector<SC_Material*>   _materials;
+    std::vector<SC_Material>    _materials;
 
     /////////// VULKAN SETUP METHODS ///////////
     void createInstance();
@@ -58,7 +55,6 @@ protected:
     void createLogicalDevice();
     void createSwapchain();
     void createImageViews();
-    void createRenderPass();
     void createDescriptorSetLayout();
     void initPipeline();
     void initFramebuffers();
@@ -67,25 +63,21 @@ protected:
     void createCommand();
     void initSemaphore();
 
+
+
     void createTextureView();
 
     void updateRenderingCommands();
-    void createShaderModule(const std::vector<char>& code, VkShaderModule& shaderModule);
-
-    void renderToImage(SVRenderer* renderer);
-    void loadImage(VkImage image);
 public:
-    SVRenderer(SVWidget *widget = nullptr);
     SVRenderer(SWSRenderWindow *window);
     ~SVRenderer();
     void init();
     void destroy();
 
-    void loadMaterial(SC_Material* material);
     void addMeshData(std::vector<SVVertex3D>& vertices, std::vector<uint32_t>& indices);
     void removeMeshData(uint32_t index);
     void render();
-
+    void renderToImage(SVRenderer* renderer);
 };
 
 #endif

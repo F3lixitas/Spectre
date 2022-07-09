@@ -1,12 +1,37 @@
 #include "SVPipeline.hpp"
+#include "../utils/SOpenFile.hpp"
+#include <iostream>
 
 void
-SVPipeline::init(VkShaderModule vertexShader, VkShaderModule fragmentShader, VkExtent2D size, SVPipelineConfig config) {
+SVPipeline::init(VkExtent2D size, SVPipelineConfig config) {
+
+    _vertexShaderB  = readFile(config.vertexShaderPath.data());//copy shader from source/vulkan/shaders
+    _fragmentShaderB= readFile(config.fragmentShaderPath.data());
+
+
+    VkShaderModuleCreateInfo vertexShaderInfo;
+    vertexShaderInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    vertexShaderInfo.pNext = nullptr;
+    vertexShaderInfo.flags = 0;
+    vertexShaderInfo.codeSize = _vertexShaderB.size();
+    vertexShaderInfo.pCode = (uint32_t*)_vertexShaderB.data();
+
+    if(vkCreateShaderModule(*_device, &vertexShaderInfo, nullptr, &_vertexShaderModule) != VK_SUCCESS) std::cout << "vertex shader creation failed\n";
+
+    VkShaderModuleCreateInfo fragmentShaderInfo;
+    fragmentShaderInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    fragmentShaderInfo.pNext = nullptr;
+    fragmentShaderInfo.flags = 0;
+    fragmentShaderInfo.codeSize = _fragmentShaderB.size();
+    fragmentShaderInfo.pCode = (uint32_t*)_fragmentShaderB.data();
+
+    if(vkCreateShaderModule(*_device, &fragmentShaderInfo, nullptr, &_fragmentShaderModule) != VK_SUCCESS) std::cout << "fragment shader creation failed\n";
+
     _shaderStageInfoVertex.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     _shaderStageInfoVertex.pNext = nullptr;
     _shaderStageInfoVertex.flags = 0;
     _shaderStageInfoVertex.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    _shaderStageInfoVertex.module = vertexShader;
+    _shaderStageInfoVertex.module = _vertexShaderModule;
     _shaderStageInfoVertex.pName = "main";
     _shaderStageInfoVertex.pSpecializationInfo = nullptr;
 
@@ -14,7 +39,7 @@ SVPipeline::init(VkShaderModule vertexShader, VkShaderModule fragmentShader, VkE
     _shaderStageInfoFragment.pNext = nullptr;
     _shaderStageInfoFragment.flags = 0;
     _shaderStageInfoFragment.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    _shaderStageInfoFragment.module = fragmentShader;
+    _shaderStageInfoFragment.module = _fragmentShaderModule;
     _shaderStageInfoFragment.pName = "main";
     _shaderStageInfoFragment.pSpecializationInfo = nullptr;
 

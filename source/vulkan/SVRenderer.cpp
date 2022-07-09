@@ -3,17 +3,6 @@
 #include "../utils/SOpenFile.hpp"
 #include "../window/SWSRenderWindow.hpp"
 
-void SVRenderer::createShaderModule(const std::vector<char> &code, VkShaderModule &shaderModule) {
-    VkShaderModuleCreateInfo shaderInfo;
-    shaderInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    shaderInfo.pNext = nullptr;
-    shaderInfo.flags = 0;
-    shaderInfo.codeSize = code.size();
-    shaderInfo.pCode = (uint32_t*)code.data();
-
-    vkCreateShaderModule(_device, &shaderInfo, nullptr, &shaderModule);
-}
-
 void SVRenderer::createInstance() {
     VkApplicationInfo appInfo;
     appInfo.sType               = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -25,14 +14,6 @@ void SVRenderer::createInstance() {
     appInfo.pEngineName         = "Spectre Engine";
 
     std::vector<const char*> layers = {"VK_LAYER_KHRONOS_validation"};
-
-    /*
-#if defined __linux__ || defined __APPLE__
-    const char* extensions[] = {"VK_KHR_xcb_surface", "VK_KHR_surface"};
-#elif defined _WIN32
-    const char* extensions[] = {"VK_KHR_win32_surface", "VK_KHR_surface"};
-#endif
-*/
 
     uint32_t count;
     const char** extensions = glfwGetRequiredInstanceExtensions(&count);
@@ -51,11 +32,7 @@ void SVRenderer::createInstance() {
 }
 
 void SVRenderer::initSurface() {
-//    if(_widget)
-//        _widget->loadSurface(_instance, _surface);
-//    else
-        _window->loadSurface(_instance, &_surface);
-
+    _window->loadSurface(_instance, &_surface);
 }
 
 void SVRenderer::initPhysicalDevices() {
@@ -145,7 +122,7 @@ void SVRenderer::createSwapchain() {
     dimensions.extent   = _displaySize;
     dimensions.offset.x = 0;
     dimensions.offset.y = 0;
-    _swapchain.init(_device, _physicalDevice, _surface, dimensions, _displayImageFormat, _displayImageColorSpace);
+    _swapchain.init(_physicalDevice, _surface, dimensions, _displayImageFormat, _displayImageColorSpace);
 }
 
 void SVRenderer::createImageViews() {
@@ -178,50 +155,6 @@ void SVRenderer::createImageViews() {
     }
 }
 
-void SVRenderer::createRenderPass() {
-    VkAttachmentDescription attachmentDescription{};
-    attachmentDescription.flags             = 0;
-    attachmentDescription.format            = VK_FORMAT_B8G8R8A8_SRGB;
-    attachmentDescription.samples           = VK_SAMPLE_COUNT_1_BIT;
-    attachmentDescription.loadOp            = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    attachmentDescription.storeOp           = VK_ATTACHMENT_STORE_OP_STORE;
-    attachmentDescription.stencilLoadOp     = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    attachmentDescription.stencilStoreOp    = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    attachmentDescription.initialLayout     = VK_IMAGE_LAYOUT_UNDEFINED;
-    attachmentDescription.finalLayout       = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-    VkAttachmentReference attachmentReference{};
-    attachmentReference.attachment  = 0;
-    attachmentReference.layout      = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-    VkSubpassDescription subpassDescription{};
-    subpassDescription.pipelineBindPoint    = VK_PIPELINE_BIND_POINT_GRAPHICS;
-    subpassDescription.colorAttachmentCount = 1;
-    subpassDescription.pColorAttachments    = &attachmentReference;
-
-    VkSubpassDependency subpassDependency;
-    subpassDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-    subpassDependency.dstSubpass        = 0;
-    subpassDependency.srcStageMask      = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    subpassDependency.dstStageMask      = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    subpassDependency.srcAccessMask     = 0;
-    subpassDependency.dstAccessMask     = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    subpassDependency.dependencyFlags   = 0;
-
-    VkRenderPassCreateInfo renderPassCreateInfo;
-    renderPassCreateInfo.sType              = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-    renderPassCreateInfo.pNext              = nullptr;
-    renderPassCreateInfo.flags              = 0;
-    renderPassCreateInfo.attachmentCount    = 1;
-    renderPassCreateInfo.pAttachments       = &attachmentDescription;
-    renderPassCreateInfo.subpassCount       = 1;
-    renderPassCreateInfo.pSubpasses         = &subpassDescription;
-    renderPassCreateInfo.dependencyCount    = 1;
-    renderPassCreateInfo.pDependencies      = &subpassDependency;
-
-    vkCreateRenderPass(_device, &renderPassCreateInfo, nullptr, &_renderPass);
-}
-
 void SVRenderer::createDescriptorSetLayout() {
     VkDescriptorSetLayoutBinding layoutBinding;
     layoutBinding.binding               = 0;
@@ -241,46 +174,23 @@ void SVRenderer::createDescriptorSetLayout() {
 }
 
 void SVRenderer::initPipeline() {
-    auto emptyVertexShader   = readFile("shaders/emptyShader.vert.spv");//copy shader from source/vulkan/shaders
-    auto emptyFragmentShader = readFile("shaders/emptyShader.frag.spv");
-
-    auto defaultVertexShader   = readFile("shaders/defaultVertexShader2D.vert.spv");
-    auto defaultFragmentShader = readFile("shaders/simpleShader.frag.spv");
-
-    VkShaderModule emptyVertModule;
-    VkShaderModule emptyFragModule;
-    createShaderModule(emptyVertexShader, emptyVertModule);
-    createShaderModule(emptyFragmentShader, emptyFragModule);
-
-    // 3D
-    VkShaderModule defaultVertModule;
-    VkShaderModule defaultFragModule;
-    createShaderModule(defaultVertexShader, defaultVertModule);
-    createShaderModule(defaultFragmentShader, defaultFragModule);
 
     std::vector<VkVertexInputBindingDescription> bindingDesc = SVVertex3D::getBindingDescriptions();
     std::vector<VkVertexInputAttributeDescription> attributeDesc = SVVertex3D::getAttributeDescriptions();
 //
-    SVPipelineConfig emptyPipelineConf = {0, 0, nullptr, nullptr};
+    SVPipelineConfig emptyPipelineConf = {0, 0, nullptr, nullptr, "shaders/emptyShader.vert.spv", "shaders/emptyShader.frag.spv"};
     //
-    SVPipelineConfig defaultPipelineConf = {(uint32_t )attributeDesc.size(), (uint32_t )bindingDesc.size(), attributeDesc.data(), bindingDesc.data()};
+    SVPipelineConfig defaultPipelineConf = {(uint32_t )attributeDesc.size(), (uint32_t )bindingDesc.size(),
+                                            attributeDesc.data(), bindingDesc.data(),
+                                            "shaders/defaultVertexShader2D.vert.spv", "shaders/simpleShader.frag.spv"};
 //
-    _pipelines.push_back(SVPipeline());
-    _pipelines[0].init(emptyVertModule, emptyFragModule, _displaySize, emptyPipelineConf);
-    _pipelines[0].enable(_device, _renderPass, _descriptorSetLayout);
+    _pipelines.push_back(SVPipeline(&_device));
+    _pipelines[0].init(_displaySize, emptyPipelineConf);
+    _pipelines[0].enable(_device, _swapchain.getRenderPass(), _descriptorSetLayout);
 //
-    _pipelines.push_back(SVPipeline());
-    _pipelines[1].init(defaultVertModule, defaultFragModule, _displaySize, defaultPipelineConf);
-    _pipelines[1].enable(_device, _renderPass, _descriptorSetLayout);
-//
-
-
-    vkDestroyShaderModule(_device, emptyVertModule, nullptr);
-    vkDestroyShaderModule(_device, emptyFragModule, nullptr);
-//
-    vkDestroyShaderModule(_device, defaultVertModule, nullptr);
-    vkDestroyShaderModule(_device, defaultFragModule, nullptr);
-    //
+    _pipelines.push_back(SVPipeline(&_device));
+    _pipelines[1].init(_displaySize, defaultPipelineConf);
+    _pipelines[1].enable(_device, _swapchain.getRenderPass(), _descriptorSetLayout);
 }
 
 void SVRenderer::initFramebuffers(){
@@ -291,7 +201,7 @@ void SVRenderer::initFramebuffers(){
         framebufferCreateInfo.sType             = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebufferCreateInfo.pNext             = nullptr;
         framebufferCreateInfo.flags             = 0;
-        framebufferCreateInfo.renderPass        = _renderPass;
+        framebufferCreateInfo.renderPass        = _swapchain.getRenderPass();
         framebufferCreateInfo.attachmentCount   = 1;
         framebufferCreateInfo.pAttachments      = &_imageViews[i];
         framebufferCreateInfo.width             = _displaySize.width;
@@ -379,19 +289,7 @@ void SVRenderer::createCommand(){
     for(int i = 0; i < _amountOfSwapchainImages; i++){
         vkBeginCommandBuffer(_commandBuffers[i], &cmdBufferBeginInfo);
 
-        VkClearValue clearValue = {0.0f, 0.0f, 0.0f, 1.0f};
-
-        VkRenderPassBeginInfo renderPassBeginInfo;
-        renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassBeginInfo.pNext = nullptr;
-        renderPassBeginInfo.renderPass = _renderPass;
-        renderPassBeginInfo.renderArea.offset = {0, 0};
-        renderPassBeginInfo.renderArea.extent = _displaySize;
-        renderPassBeginInfo.framebuffer = _framebuffers[i];
-        renderPassBeginInfo.clearValueCount = 1;
-        renderPassBeginInfo.pClearValues = &clearValue;
-
-        vkCmdBeginRenderPass(_commandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+        _swapchain.beginRenderPass(_commandBuffers[i], _framebuffers[i], _displaySize);
 
         vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines[0].getPipeline());
 
@@ -444,7 +342,6 @@ void SVRenderer::init() {
     createLogicalDevice();
     createSwapchain();
     createImageViews();
-    createRenderPass();
     createDescriptorSetLayout();
     initPipeline();
     initFramebuffers();
@@ -482,24 +379,9 @@ void SVRenderer::updateRenderingCommands(){
     for(int i = 0; i < _amountOfSwapchainImages; i++){
         vkBeginCommandBuffer(_commandBuffers[i], &cmdBufferBeginInfo);
 
-        VkClearValue clearValue = {0.0f, 0.0f, 0.0f, 1.0f};
-
-        VkRenderPassBeginInfo renderPassBeginInfo;
-        renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassBeginInfo.pNext = nullptr;
-        renderPassBeginInfo.renderPass = _renderPass;
-        renderPassBeginInfo.renderArea.offset = {0, 0};
-        renderPassBeginInfo.renderArea.extent = _displaySize;
-        renderPassBeginInfo.framebuffer = _framebuffers[i];
-        renderPassBeginInfo.clearValueCount = 1;
-        renderPassBeginInfo.pClearValues = &clearValue;
-
-        vkCmdBeginRenderPass(_commandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-        std::cout << "binding...\n";
+        _swapchain.beginRenderPass(_commandBuffers[i], _framebuffers[i], _displaySize);
         vkCmdBindPipeline(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines[1].getPipeline());
 
-        std::cout << "after bind\n";
         VkViewport viewport;
         viewport.x = 0.0f;
         viewport.y = 0.0f;
@@ -519,8 +401,7 @@ void SVRenderer::updateRenderingCommands(){
         VkDeviceSize offsets[] = {0};
         vkCmdBindDescriptorSets(_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines[1].getLayout(), 0, 1, &_descriptorSet, 0, nullptr);
         for(int j = 0; j < _mesh.size(); j++){
-            _mesh[j].bind(&_commandBuffers[i]);
-            _mesh[j].draw(&_commandBuffers[i]);
+            _mesh[j].draw(_commandBuffers[i]);
         }
 
         vkCmdEndRenderPass(_commandBuffers[i]);
@@ -535,11 +416,6 @@ void SVRenderer::addMeshData(std::vector<SVVertex3D>& vertices, std::vector<uint
     ASSERT(log);
     vkDeviceWaitIdle(_device);
     updateRenderingCommands();
-}
-
-void SVRenderer::loadMaterial(SC_Material* material) {
-    _materials.push_back(material);
-
 }
 
 void SVRenderer::removeMeshData(uint32_t index){
@@ -589,10 +465,6 @@ void SVRenderer::renderToImage(SVRenderer* renderer){
 
 }
 
-void SVRenderer::loadImage(VkImage image) {
-
-}
-
 void SVRenderer::destroy() {
     vkDeviceWaitIdle(_device);
 
@@ -617,11 +489,11 @@ void SVRenderer::destroy() {
     vkDestroyCommandPool(_device, _commandPool, nullptr);
 
     for(int i = 0; i < _pipelines.size(); i++){
-        _pipelines[i].destroy(_device);
+        _pipelines[i].destroy();
     }
 
     vkDestroyDescriptorSetLayout(_device, _descriptorSetLayout, nullptr);
-    vkDestroyRenderPass(_device, _renderPass, nullptr);
+
     for(int i = 0; i < _amountOfSwapchainImages; i++){
         vkDestroyImageView(_device, _imageViews[i], nullptr);
     }
@@ -629,19 +501,6 @@ void SVRenderer::destroy() {
     vkDestroyDevice(_device, nullptr);
     vkDestroySurfaceKHR(_instance, _surface, nullptr);
     vkDestroyInstance(_instance, nullptr);
-}
-
-SVRenderer::SVRenderer(SVWidget *widget) {
-    if(widget == nullptr) {
-        _widget = new SVWidget;
-        SWSWidgetInfo widgetInfo;
-        widgetInfo.sizeX = 100;
-        widgetInfo.sizeY = 100;
-
-        //todo make it proper
-    }
-    else
-        _widget = widget;
 }
 
 SVRenderer::SVRenderer(SWSRenderWindow *window) {

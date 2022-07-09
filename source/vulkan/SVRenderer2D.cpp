@@ -32,19 +32,7 @@ void SVRenderer2D::updateRenderingCommands() {
     for(int i = 0; i < _amountOfSwapchainImages; i++){
         vkBeginCommandBuffer(_commandBuffers[i], &cmdBufferBeginInfo);
 
-        VkClearValue clearValue = {0.0f, 0.0f, 0.0f, 1.0f};
-
-        VkRenderPassBeginInfo renderPassBeginInfo;
-        renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassBeginInfo.pNext = nullptr;
-        renderPassBeginInfo.renderPass = _renderPass;
-        renderPassBeginInfo.renderArea.offset = {0, 0};
-        renderPassBeginInfo.renderArea.extent = _displaySize;
-        renderPassBeginInfo.framebuffer = _framebuffers[i];
-        renderPassBeginInfo.clearValueCount = 1;
-        renderPassBeginInfo.pClearValues = &clearValue;
-
-        vkCmdBeginRenderPass(_commandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+        _swapchain.beginRenderPass(_commandBuffers[i], _framebuffers[i], _displaySize);
 
         VkViewport viewport;
         viewport.x = 0.0f;

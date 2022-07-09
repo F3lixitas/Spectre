@@ -1,15 +1,79 @@
 #include "SVSwapchain.hpp"
 #include <iostream>
 
-void SVSwapchain::init(VkDevice &logicalDevice, VkPhysicalDevice *physicalDevice, VkSurfaceKHR &surface,
+SVSwapchain::SVSwapchain(VkDevice* device) : _device(device){
+
+}
+
+void SVSwapchain::beginRenderPass(VkCommandBuffer& commandBuffer, VkFramebuffer& framebuffer, VkExtent2D size){
+    VkClearValue clearValue = {0.0f, 0.0f, 0.0f, 1.0f};
+
+    VkRenderPassBeginInfo renderPassBeginInfo;
+    renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassBeginInfo.pNext = nullptr;
+    renderPassBeginInfo.renderPass = _renderPass;
+    renderPassBeginInfo.renderArea.offset = {0, 0};
+    renderPassBeginInfo.renderArea.extent = size;
+    renderPassBeginInfo.framebuffer = framebuffer;
+    renderPassBeginInfo.clearValueCount = 1;
+    renderPassBeginInfo.pClearValues = &clearValue;
+
+    vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void SVSwapchain::createRenderPass(){
+    VkAttachmentDescription attachmentDescription{};
+    attachmentDescription.flags             = 0;
+    attachmentDescription.format            = VK_FORMAT_B8G8R8A8_SRGB;
+    attachmentDescription.samples           = VK_SAMPLE_COUNT_1_BIT;
+    attachmentDescription.loadOp            = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    attachmentDescription.storeOp           = VK_ATTACHMENT_STORE_OP_STORE;
+    attachmentDescription.stencilLoadOp     = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    attachmentDescription.stencilStoreOp    = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    attachmentDescription.initialLayout     = VK_IMAGE_LAYOUT_UNDEFINED;
+    attachmentDescription.finalLayout       = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+    VkAttachmentReference attachmentReference{};
+    attachmentReference.attachment  = 0;
+    attachmentReference.layout      = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+    VkSubpassDescription subpassDescription{};
+    subpassDescription.pipelineBindPoint    = VK_PIPELINE_BIND_POINT_GRAPHICS;
+    subpassDescription.colorAttachmentCount = 1;
+    subpassDescription.pColorAttachments    = &attachmentReference;
+
+    VkSubpassDependency subpassDependency;
+    subpassDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    subpassDependency.dstSubpass        = 0;
+    subpassDependency.srcStageMask      = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    subpassDependency.dstStageMask      = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    subpassDependency.srcAccessMask     = 0;
+    subpassDependency.dstAccessMask     = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    subpassDependency.dependencyFlags   = 0;
+
+    VkRenderPassCreateInfo renderPassCreateInfo;
+    renderPassCreateInfo.sType              = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+    renderPassCreateInfo.pNext              = nullptr;
+    renderPassCreateInfo.flags              = 0;
+    renderPassCreateInfo.attachmentCount    = 1;
+    renderPassCreateInfo.pAttachments       = &attachmentDescription;
+    renderPassCreateInfo.subpassCount       = 1;
+    renderPassCreateInfo.pSubpasses         = &subpassDescription;
+    renderPassCreateInfo.dependencyCount    = 1;
+    renderPassCreateInfo.pDependencies      = &subpassDependency;
+
+    vkCreateRenderPass(*_device, &renderPassCreateInfo, nullptr, &_renderPass);
+}
+
+void SVSwapchain::init(VkPhysicalDevice *physicalDevice, VkSurfaceKHR &surface,
                        VkRect2D displayDimensions, VkFormat displayFormat, VkColorSpaceKHR colorSpace) {
     VkSurfaceCapabilitiesKHR surfaceCapa;
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice[0], surface, &surfaceCapa);
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(*physicalDevice, surface, &surfaceCapa);
 
     uint32_t surfaceFormatCount;
-    vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice[0], surface, &surfaceFormatCount, nullptr);
+    vkGetPhysicalDeviceSurfaceFormatsKHR(*physicalDevice, surface, &surfaceFormatCount, nullptr);
     VkSurfaceFormatKHR* surfaceFormats = new VkSurfaceFormatKHR[surfaceFormatCount];
-    vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice[0], surface, &surfaceFormatCount, surfaceFormats);
+    vkGetPhysicalDeviceSurfaceFormatsKHR(*physicalDevice, surface, &surfaceFormatCount, surfaceFormats);
 
     for(int i = 0; i < surfaceFormatCount; i++){
         std::cout << "format :" << surfaceFormats[i].format << " color space :" << surfaceFormats[i].colorSpace << std::endl;
@@ -22,9 +86,9 @@ void SVSwapchain::init(VkDevice &logicalDevice, VkPhysicalDevice *physicalDevice
 
 
     uint32_t amountOfPresentModes;
-    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice[0], surface, &amountOfPresentModes, nullptr);
+    vkGetPhysicalDeviceSurfacePresentModesKHR(*physicalDevice, surface, &amountOfPresentModes, nullptr);
     VkPresentModeKHR *presentModes = new VkPresentModeKHR[amountOfPresentModes];
-    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice[0], surface, &amountOfPresentModes, presentModes);
+    vkGetPhysicalDeviceSurfacePresentModesKHR(*physicalDevice, surface, &amountOfPresentModes, presentModes);
     VkPresentModeKHR chosenPresentMode = presentModes[0];
 
 
@@ -70,8 +134,9 @@ void SVSwapchain::init(VkDevice &logicalDevice, VkPhysicalDevice *physicalDevice
     swapchainCreateInfo.clipped = VK_TRUE;
     swapchainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
 
-    vkCreateSwapchainKHR(logicalDevice, &swapchainCreateInfo, nullptr, &_swapchain);
-
+    vkCreateSwapchainKHR(*_device, &swapchainCreateInfo, nullptr, &_swapchain);
 
     delete[] presentModes;
+
+    createRenderPass();
 }

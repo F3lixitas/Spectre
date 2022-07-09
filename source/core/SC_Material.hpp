@@ -5,9 +5,11 @@
  * For now an empty shell, will handle the loading of materials into the renderer
  * */
 
+#include <vector>
 #include <vulkan/vulkan.hpp>
 #include "../vulkan/SVPipeline.hpp"
 
+class SVMesh3D;
 
 class SC_Material{
 private:
@@ -20,14 +22,27 @@ private:
 
     VkDescriptorSet _descriptorSet;
 
-    SVPipeline      _pipeline;
+    SVPipeline*     _pipeline;
+
+    std::vector<SVMesh3D*> _meshes;
 public:
     void loadFromFiles(const char* pathV, const char* pathF);
     void loadFromBuffer(const char* buffer, uint32_t size);
 
+    void addMesh(SVMesh3D* mesh) {
+        _meshes.push_back(mesh);
+    }
+
+    void destroy(){
+        _pipeline->destroy();
+        delete _pipeline;
+    }
+
     // internal
-    void i_createShaderModules(VkDevice& device, VkRenderPass& renderPass, VkExtent2D displaySize, VkDescriptorSetLayout& descriptorSetLayout);
+    void i_addToRenderer(VkDevice& device, VkExtent2D size);
     void i_bindMaterial(VkCommandBuffer* commandBuffer);
+    void i_draw(VkCommandBuffer& cmdBuffer);
+
 };
 
 #endif

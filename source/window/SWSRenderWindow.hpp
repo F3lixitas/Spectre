@@ -5,12 +5,21 @@
 #include <GLFW/glfw3.h>
 
 #include "../vulkan/SVRenderer.hpp"
-#include "SWSWidget.hpp"
 
 typedef struct vec2i{
     int x;
     int y;
 }vec2i;
+
+typedef struct SWSWidgetInfo {
+    int         offsetX = 0;
+    int         offsetY = 0;
+    int         sizeX = 100;
+    int         sizeY = 100;
+    uint32_t    flags = 0;
+    void (*onCreate)(int,int) = nullptr;
+    void (*onDestroy)(int, int) = nullptr;
+} SWSWidgetInfo;
 
 class SWSRenderWindow{
 private:

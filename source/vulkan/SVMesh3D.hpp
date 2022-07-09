@@ -44,7 +44,7 @@ public:
 
     SLog loadVertices(std::vector<SVVertex3D>* RESTRICT vertices, std::vector<uint32_t>* RESTRICT indices, VkPhysicalDevice* RESTRICT physicalDevice);
     void setMaterial(SC_Material* material){_material = material;}
-    void draw(VkCommandBuffer* commandBuffer);
+    void draw(VkCommandBuffer& commandBuffer);
     void bind(VkCommandBuffer* commandBuffer);
 
 };
